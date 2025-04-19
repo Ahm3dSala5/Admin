@@ -10,6 +10,7 @@ using OpenQA.Selenium.Support.UI;
 
 namespace AdminPageTests
 {
+    [TestFixture]
     public class AdminAdministrationSetupAssetClassesTests : IDisposable
     {
         private IWebDriver driver;
@@ -48,17 +49,8 @@ namespace AdminPageTests
             driver.Navigate().GoToUrl("http://ec2-34-226-24-71.compute-1.amazonaws.com/App/Dashboard");
         }
 
-
         [Test]
-        public void  AdministrationOption_WhenClickOnAdministrationBtn_MustDisplayDropownlist()
-        {
-            var administrationBtn = driver.FindElement
-                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/a/span/span"));
-            administrationBtn.Click();
-        }
-
-        [Test]
-        public void AdministrationOptionsTest()
+        public void AssetClassesPage_AdministratioOptionTest()
         {
             // test adminstration option
             var administrationOption = driver.FindElement
@@ -69,59 +61,183 @@ namespace AdminPageTests
             Assert.AreEqual("Administration",administrationOption.Text);
             administrationOption.Click();
 
+            string Icon = "m-menu__link-icon flaticon-cogwheel";
             var administrationIcon = driver.FindElement
                 (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/a/i[1]"));
             Assert.True(administrationIcon.Displayed);
             Assert.True(administrationIcon.Enabled);
+            Assert.AreEqual(administrationIcon.GetAttribute("class"),Icon);
 
+            string arrowIcon = "m-menu__ver-arrow la la-angle-right";
             var administrationArrow = driver.FindElement
                 (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/a/i[2]"));
             Assert.True(administrationArrow.Displayed);
             Assert.True(administrationArrow.Enabled);
+            Assert.AreEqual(administrationArrow.GetAttribute("class"), arrowIcon);
+
+            var administrationOptionTitle = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/a/span/span"));
+            Assert.True(administrationOptionTitle.Displayed);
+            Assert.True(administrationOptionTitle.Enabled);
+            Assert.AreEqual(administrationOptionTitle.Text, "Administration");
+            Assert.AreEqual(administrationOptionTitle.GetAttribute("class"),"title");
         }
 
 
         [Test]
-        public void AdministrationPage_WhenClickOnSetupOption_MustOpenDropdownlist()
-        {
-            // to open administration page 
-             AdministrationOption_WhenClickOnAdministrationBtn_MustDisplayDropownlist();
-
-            var setupBtn = driver.FindElement
-                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/a/span/span"));
-            setupBtn.Click();
-        }
-
-        [Test]
-        public void AdministrationOption_TestSetupOption()
+        public void AssetClassesPage_SetupOptionTest()
         {
             // to click on adminstration options
-            AdministrationPage_WhenClickOnSetupOption_MustOpenDropdownlist();
+            var administrationOption = driver.FindElement
+                  (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/a/span/span"));
+            administrationOption.Click();
 
             var setupOption = driver.FindElement
-                 (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/a/span/span"));
-            setupOption.Click();
+                 (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/a"));
             Assert.True(setupOption.Displayed);
             Assert.True(setupOption.Enabled);
             Assert.AreEqual("Setup", setupOption.Text);
+            Assert.AreEqual(setupOption.GetAttribute("custom-data"),"Setup");
+            Assert.AreEqual(setupOption.GetAttribute("href"),$"{driver.Url}#");
+            Assert.AreEqual(setupOption.GetAttribute("class"), "side-menu-links m-menu__link m-menu__toggle");
             setupOption.Click();
 
-            var setupIcon = driver.FindElement
+            string Icon = "m-menu__link-icon flaticon-cogwheel";
+            var setupOptionIcon = driver.FindElement
                 (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/a/i[1]"));
-            Assert.True(setupIcon.Displayed);
-            Assert.True(setupIcon.Enabled);
+            Assert.True(setupOptionIcon.Displayed);
+            Assert.True(setupOptionIcon.Enabled);
+            Assert.AreEqual(setupOptionIcon.GetAttribute("class"),Icon);
 
-            var setupArrow = driver.FindElement
+            string Arrow = "m-menu__ver-arrow la la-angle-right";
+            var setupOptionArrow = driver.FindElement
                 (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/a/i[2]"));
-            Assert.True(setupArrow.Displayed);
-            Assert.True(setupArrow.Enabled);
+            Assert.True(setupOptionArrow.Displayed);
+            Assert.True(setupOptionArrow.Enabled);
+            Assert.AreEqual(setupOptionArrow.GetAttribute("class"), Arrow);
+
+            var setupOptionTitle = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/a/span/span"));
+            Assert.True(setupOptionTitle.Displayed);
+            Assert.True(setupOptionTitle.Enabled);
+            Assert.AreEqual(setupOptionTitle.Text,"Setup");
+            Assert.AreEqual(setupOptionTitle.GetAttribute("class"),"title");
         }
 
         [Test]
-        public void AssetClassPage_DataTableFilter()
+        public void AssetClassesPage_AssetClassesOtionTest()
+        {
+            var administrationOption = driver.FindElement
+               (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/a/span/span"));
+            administrationOption.Click();
+
+            var setupOption = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/a/span/span"));
+            setupOption.Click();
+
+            var assetClassesOption = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/nav/ul/li[1]/a"));
+            Assert.IsTrue(assetClassesOption.Enabled);
+            Assert.IsTrue(assetClassesOption.Displayed);
+            Assert.AreEqual(assetClassesOption.GetAttribute("target"),"_self");
+            Assert.AreEqual(assetClassesOption.GetAttribute("custom-data"),"Asset Classes");
+            Assert.AreEqual(assetClassesOption.GetAttribute("class"), "side-menu-links m-menu__link");
+            Assert.AreEqual(assetClassesOption.GetAttribute("href"), "http://ec2-34-226-24-71.compute-1.amazonaws.com/App/AssetClasses");
+
+            var assetClassesOptionIcon = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/nav/ul/li[1]/a/i"));
+            Assert.IsTrue(assetClassesOptionIcon.Enabled);
+            Assert.IsTrue(assetClassesOptionIcon.Displayed);
+            Assert.AreEqual(assetClassesOptionIcon.GetAttribute("class"), "m-menu__link-icon flaticon-list-1");
+
+            var assetClassOptionTitle = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/nav/ul/li[1]/a/span/span"));
+            Assert.IsTrue(assetClassOptionTitle.Enabled);
+            Assert.IsTrue(assetClassOptionTitle.Displayed);
+            Assert.AreEqual(assetClassOptionTitle.GetAttribute("class"), "title");
+        }
+
+        [Test]
+        public void AssetClassPage_OpenPage()
+        {
+            var administrationOption = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/a/span/span"));
+            administrationOption.Click();
+
+            var setupOption = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/a/span/span"));
+            setupOption.Click();
+
+            var assetClassOption = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/nav/ul/li[1]/a/span/span"));
+            assetClassOption.Click();
+        }
+
+        [Test]
+        public void AssetClassPage_SubHeaderTitleTest()
         {
             // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
+            AssetClassPage_OpenPage();
+
+            var subTitle = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
+
+            Assert.IsTrue(subTitle.Enabled);
+            Assert.IsTrue(subTitle.Displayed);
+            Assert.AreEqual(subTitle.Text,"Asset Classes");
+        }
+
+        [Test]
+        public void AssetClassPage_DashboardNavigationLinkTest()
+        {
+            // to open asset class page
+            AssetClassPage_OpenPage();
+
+            var dashbaordBtn = driver.FindElement(
+                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
+            Assert.True(dashbaordBtn.Enabled);
+            Assert.True(dashbaordBtn.Displayed);
+            Assert.AreEqual(dashbaordBtn.Text, "Dashboard");
+            Assert.AreEqual(dashbaordBtn.GetAttribute("class"), "m-nav__link-text");
+
+            var urlBeforeClick = driver.Url;
+            dashbaordBtn.Click();
+            var UrlAfterClick = driver.Url;
+            Assert.AreNotEqual(UrlAfterClick,urlBeforeClick);
+        }
+
+        [Test]
+        public void AssetClassPage_AssetClassNavigationLinkTest()
+        {
+            // to open asset class page
+            AssetClassPage_OpenPage();
+
+            var assetClasses = driver.FindElement(
+                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[3]/span"));
+            Assert.True(assetClasses.Enabled);
+            Assert.True(assetClasses.Displayed);
+            Assert.AreEqual(assetClasses.Text, "Asset Classes");
+            Assert.AreEqual(assetClasses.GetAttribute("class"), "m-nav__link-text");
+        }
+
+        [Test]
+        public void AssetClassPage_SeperatorBetweenNavigationLinksTest()
+        {
+            // to open asset class page
+            AssetClassPage_OpenPage();
+            var seperator = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[2]"));
+
+            Assert.IsTrue(seperator.Enabled);
+            Assert.IsTrue(seperator.Displayed);
+            Assert.AreEqual(seperator.GetAttribute("class"), "m-nav__separator");
+        }
+
+        [Test]
+        public void AssetClassPage_DataTableFilterTest()
+        {
+            // to open asset class page
+            AssetClassPage_OpenPage();
 
             var searchLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable_filter\"]/label"));
@@ -136,75 +252,40 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void AdministrationOption_WhenClickOnAssetClass_MustOpenPage()
+        public void AssetClassPage_DataTableLengthTests()
         {
-            // to click on adminstration options
-            AdministrationOption_WhenClickOnAdministrationBtn_MustDisplayDropownlist();
+            // to open asset class page
+            AssetClassPage_OpenPage();
 
-            var setupOption = driver.FindElement
-                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/a/span/span"));
-            setupOption.Click();
+            var showLabel = driver.FindElement
+                (By.XPath("//*[@id=\"AssetClassesTable_length\"]/label"));
+            Assert.True(showLabel.Text.Contains("Show"));
+            Assert.True(showLabel.Enabled);
+            Assert.True(showLabel.Displayed);
+            showLabel.Click();
 
-            var assetClass = driver.FindElement
-                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[3]/nav/ul/li[1]/nav/ul/li[1]/a/span/span"));
-            assetClass.Click();
+            var showValue = driver.FindElement(By.Name("AssetClassesTable_length"));
+            Assert.True(showValue.Enabled);
+            Assert.True(showValue.Displayed);
+            var selectedValue = new SelectElement(showValue);
+            selectedValue.SelectByIndex(1);
         }
 
         [Test]
-        public void AssetClassPage_PageTitleTest()
+        public void AssetClassPage_WhenClickOnCreateBtn_MustOpenCreateForm()
         {
             // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
-
-            var title = driver.FindElement(By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
-            Assert.AreEqual("Asset Classes", title.Text);
-            Assert.True(title.Displayed);
-            Assert.True(title.Enabled);
-        }
-
-        [Test]
-        public void AssetClass_WhenClickOnDashboard_MustReturnToDashbaordPage()
-        {
-            // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
-
-             var dashbaordBtn = driver.FindElement(
-                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
-            var assetClassUrl = driver.Url;
-            dashbaordBtn.Click();
-            var dashbaordUrl = driver.Url;
-
-            Assert.AreNotEqual(dashbaordUrl, assetClassUrl);
-        }
-
-        [Test]
-        public void AssetClassPage_DashboradBtnTest()
-        {
-            // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
-
-            var dashbaordBtn = driver.FindElement(
-                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
-            Assert.True(dashbaordBtn.Enabled);
-            Assert.True(dashbaordBtn.Displayed);
-            Assert.AreEqual(dashbaordBtn.Text, "Dashboard");
-        }
-
-        public void AssetClass_WhenClickOnCreateBtn_MustOpenCreateForm()
-        {
-            // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
+            AssetClassPage_OpenPage();
 
             var createBtn = driver.FindElement(By.Id("btnCreate"));
             createBtn.Click();
         }
 
-
         [Test]
-        public void AssetClass_CreateBtnTest()
+        public void AssetClassPage_CreateBtnTest()
         {
             // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
+            AssetClassPage_OpenPage();
 
             var createBtn = driver.FindElement(By.Id("btnCreate"));
             Assert.True(createBtn.Enabled);
@@ -213,10 +294,10 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void AssetClass_CreateFormTest()
+        public void AssetClassPage_CreateFormTest()
         {
             // to open create form
-            AssetClass_WhenClickOnCreateBtn_MustOpenCreateForm();
+            AssetClassPage_WhenClickOnCreateBtn_MustOpenCreateForm();
 
             var assetClassLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassCreateModal\"]/form/div[1]/div/div/div/label"));
@@ -261,31 +342,10 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void AssetClass_DataTableLengthTests()
+        public void AssetClassPage_ReOrderPageTest()
         {
             // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
-
-            var showLabel = driver.FindElement
-                (By.XPath("//*[@id=\"AssetClassesTable_length\"]/label"));
-            Assert.True(showLabel.Text.Contains("Show"));
-            Assert.True(showLabel.Enabled);
-            Assert.True(showLabel.Displayed);
-            showLabel.Click();
-
-            var showValue = driver.FindElement(By.Name("AssetClassesTable_length"));
-            Assert.True(showValue.Enabled);
-            Assert.True(showValue.Displayed);
-            var selectedValue = new SelectElement(showValue);
-            selectedValue.SelectByIndex(1);
-        }
-
-
-        [Test]
-        public void AssetClass_ReOrderPageTest()
-        {
-            // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
+            AssetClassPage_OpenPage();
 
             var assetClasseName = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable\"]/thead/tr/th[1]"));
@@ -308,10 +368,10 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void AssetClass_EditAssetTest()
+        public void AssetClassPage_EditAssetTest()
         {
             // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
+            AssetClassPage_OpenPage();
 
             var editIcon = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable\"]/tbody/tr[1]/td[3]/a[1]"));
@@ -364,10 +424,10 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void AssetClass_DeleteAssetTest()
+        public void AssetClassPage_DeleteAssetTest()
         {
             // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
+            AssetClassPage_OpenPage();
 
             var deleteIcon = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable\"]/tbody/tr[1]/td[3]/a[2]"));
@@ -397,10 +457,10 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void AssetClass_PaginateTest()
+        public void AssetClassPage_PaginateTest()
         {
             // to open asset class page
-            AdministrationOption_WhenClickOnAssetClass_MustOpenPage();
+            AssetClassPage_OpenPage();
 
             var nextBtn = driver.FindElement(By.Id("AssetClassesTable_next"));
             Assert.AreEqual(nextBtn.Text,"Next");
@@ -413,6 +473,47 @@ namespace AdminPageTests
             Assert.True(previoustBtn.Enabled);
             Assert.True(previoustBtn.Displayed);
             previoustBtn.Click();
+        }
+
+        [Test]
+        public void AssetClassesPage_DataTableInfoTest()
+        {
+            // to open asset class page 
+            AssetClassPage_OpenPage();
+
+            var tableInfo = driver.FindElement(By.Id("AssetClassesTable_info"));
+            Assert.IsTrue(tableInfo.Enabled);
+            Assert.IsTrue(tableInfo.Displayed);
+            Assert.IsTrue(tableInfo.Text.Contains("Showing") && tableInfo.Text.Contains("entries"));
+            Assert.AreEqual(tableInfo.GetAttribute("aria-live"), "polite");
+            Assert.AreEqual(tableInfo.GetAttribute("class"), "dataTables_info");
+        }
+
+        [Test]
+        public void AssetClassPage_CopyRightTest()
+        {
+            // to open asset class page 
+            AssetClassPage_OpenPage();
+
+            var copyRight = driver.FindElement
+                (By.XPath("/html/body/footer/div/div/div[1]/span"));
+            Assert.IsTrue(copyRight.Enabled);
+            Assert.IsTrue(copyRight.Displayed);
+            Assert.AreEqual(copyRight.Text,("2025 © CTDOT (Ver .)"));
+            Assert.AreEqual(copyRight.GetAttribute("class"), "m-footer__copyright");
+        }
+
+        [Test]
+        public void AssetClassesPage_MinimizeToggleBtnTest()
+        {
+            // to open asset class page 
+            AssetClassPage_OpenPage();
+
+            var toggleIcon = driver.FindElement(By.Id("m_aside_left_minimize_toggle"));
+            Assert.IsTrue(toggleIcon.Enabled);
+            Assert.IsTrue(toggleIcon.Displayed);
+            Assert.AreEqual(toggleIcon.GetAttribute("href"), "javascript:;");
+            Assert.AreEqual(toggleIcon.GetAttribute("class"), "m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-desktop-inline-block  ");
         }
     }
 }

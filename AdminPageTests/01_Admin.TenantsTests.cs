@@ -5,13 +5,14 @@ using OpenQA.Selenium.Support.UI;
 
 namespace AdminPageTests
 {
+    [TestFixture]
     public class AdminTenantsTests : IDisposable
     {
         private IWebDriver driver;
 
         public void Dispose()
         {
-            //driver.Dispose();
+            driver.Dispose();
         }
 
         [TearDown]
@@ -19,8 +20,9 @@ namespace AdminPageTests
         {
             if (driver != null)
             {
-              //  driver.Quit();
+               driver.Quit();
             }
+
         }
 
         [SetUp]
@@ -44,11 +46,39 @@ namespace AdminPageTests
         }
 
         [Test]
+        public void TenantsPage_TenantsOptionTest()
+        {
+            var tenantsOption = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[1]/a"));
+            Assert.IsTrue(tenantsOption.Enabled);
+            Assert.IsTrue(tenantsOption.Displayed);
+            Assert.AreEqual(tenantsOption.Text,"Tenants");
+            Assert.AreEqual(tenantsOption.GetAttribute("target"),"_self");
+            Assert.AreEqual(tenantsOption.GetAttribute("custom-data"), "Tenants");
+            Assert.AreEqual(tenantsOption.GetAttribute("href"), 
+                "http://ec2-34-226-24-71.compute-1.amazonaws.com/App/Tenants");
+
+            string Icon = "m-menu__link-icon flaticon-suitcase";
+            var tenantsOptionIcon = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[1]/a/i"));
+            Assert.IsTrue(tenantsOptionIcon.Enabled);
+            Assert.IsTrue(tenantsOptionIcon.Displayed);
+            Assert.AreEqual(tenantsOptionIcon.GetAttribute("class"), Icon);
+
+            var tenantsOptionTitle = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[1]/a/span/span"));
+            Assert.IsTrue(tenantsOptionTitle.Enabled);
+            Assert.IsTrue(tenantsOptionTitle.Displayed);
+            Assert.AreEqual(tenantsOptionTitle.GetAttribute("class"), "title");
+        }
+
+        [Test]
         public void Tenants_WhenClickOnHiAdmin_MustShowingLogoutOption()
         {
             var HiAdmin = driver.FindElement
                 (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
             HiAdmin.Click();
+
             Assert.AreEqual(HiAdmin.Text, "HI,");
             Assert.True(HiAdmin.Displayed);
             Assert.True(HiAdmin.Enabled);
@@ -93,18 +123,7 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void TenantsPage_TenantsOptionsTest()
-        {
-            var TenantsOption = driver.FindElement
-                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[1]/a/span"));
-
-            Assert.AreEqual(TenantsOption.Text,"Tenants");
-            Assert.True(TenantsOption.Displayed);
-            Assert.True(TenantsOption.Enabled);
-        }
-
-        [Test]
-        public void TenantsPage_WhenClickOnTenants_MustOpneTenantsPage()
+        public void TenantsPage_OpenPage()
         {
             var TenantsBtn = driver.FindElement
                 (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[1]/a/span/span"));
@@ -112,40 +131,71 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void TenantsPage_PageTitleTest()
+        public void TenantsPage_SubHeaderTitleTest()
         {
-            // to click open tenants page
-            TenantsPage_WhenClickOnTenants_MustOpneTenantsPage();
+            // for go to tenants page
+            TenantsPage_OpenPage();
 
-            var title = driver.FindElement(By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
-            Assert.True(title.Displayed);
-            Assert.AreEqual(title.Text, "Tenants");
+            var subTitle = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
 
+            Assert.IsTrue(subTitle.Enabled);
+            Assert.IsTrue(subTitle.Displayed);
+            Assert.AreEqual(subTitle.Text, "Tenants");
         }
 
         [Test]
-        public void TenantsPage_WhenClicOnDashboardBtn_MustGoToDashboardPage()
+        public void TenantsPage_DashboardNavigationLinkTest()
         {
-            // to open tenancy page 
-            TenantsPage_WhenClickOnTenants_MustOpneTenantsPage();
+            // for go to tenants page
+            TenantsPage_OpenPage();
 
-            var dashboardBtn = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
+            var dashbaordBtn = driver.FindElement(
+                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
+            Assert.True(dashbaordBtn.Enabled);
+            Assert.True(dashbaordBtn.Displayed);
+            Assert.AreEqual(dashbaordBtn.Text, "Dashboard");
+            Assert.AreEqual(dashbaordBtn.GetAttribute("class"), "m-nav__link-text");
 
-            Assert.AreEqual(dashboardBtn.Text,"Dashboard");
-            Assert.True(dashboardBtn.Enabled);
-            Assert.True(dashboardBtn.Displayed);
-            var UrlBeforeClick = driver.Url;
-            dashboardBtn.Click();
+            var urlBeforeClick = driver.Url;
+            dashbaordBtn.Click();
             var UrlAfterClick = driver.Url;
-            Assert.AreNotEqual(UrlAfterClick,UrlBeforeClick);
+            Assert.AreNotEqual(UrlAfterClick, urlBeforeClick);
+        }
+
+        [Test]
+        public void TenantsPage_AssetClassNavigationLinkTest()
+        {
+            // for go to tenants page
+            TenantsPage_OpenPage();
+
+            var tenants = driver.FindElement(
+                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[3]/span"));
+            Assert.True(tenants.Enabled);
+            Assert.True(tenants.Displayed);
+            Assert.AreEqual(tenants.Text, "Tenants");
+            Assert.AreEqual(tenants.GetAttribute("class"), "m-nav__link-text");
+        }
+
+        [Test]
+        public void TenantsPage_SeperatorBetweenNavigationLinksTest()
+        {
+            // for go to tenants page
+            TenantsPage_OpenPage();
+
+            var seperator = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[2]"));
+
+            Assert.IsTrue(seperator.Enabled);
+            Assert.IsTrue(seperator.Displayed);
+            Assert.AreEqual(seperator.GetAttribute("class"), "m-nav__separator");
         }
 
         [Test]
         public void TenantsPage_DataTableLengthTest()
         {
             // for go to tenants page
-            TenantsPage_WhenClickOnTenants_MustOpneTenantsPage();
+            TenantsPage_OpenPage();
 
             var showLabel = driver.FindElement
                 (By.XPath("//*[@id=\"TenantTable_length\"]/label"));
@@ -165,7 +215,7 @@ namespace AdminPageTests
         public void TenantsPage_DataTableFilterTest()
         {
             // for go to tenants page
-            TenantsPage_WhenClickOnTenants_MustOpneTenantsPage();
+            TenantsPage_OpenPage();
 
             var searchLabel = driver.FindElement
                (By.XPath("//*[@id=\"TenantTable_filter\"]/label"));
@@ -185,7 +235,7 @@ namespace AdminPageTests
         public void TenantsPage_CreateBtnTest()
         {
             // for go to tenants page
-            TenantsPage_WhenClickOnTenants_MustOpneTenantsPage();
+            TenantsPage_OpenPage();
 
             var createBtn = driver.FindElement(By.Id("btnCreate"));
             Assert.AreEqual(createBtn.Text, "Create");
@@ -198,7 +248,7 @@ namespace AdminPageTests
         public void TenantsPage_WhenClickOnCreateBtn_MustOpenCreateForm()
         {
             // for go to tenants page
-            TenantsPage_WhenClickOnTenants_MustOpneTenantsPage();
+            TenantsPage_OpenPage();
             var createBtn = driver.FindElement(By.Id("btnCreate"));
             createBtn.Click();
         }
@@ -274,13 +324,64 @@ namespace AdminPageTests
             Assert.True(cancelBtn.Displayed);
 
         }
-       
+
+        [Test]
+        public void TenantsPageTest_ReOrderTableTest()
+        {
+            // to open tenancy page
+            TenantsPage_OpenPage();
+
+            var tableColumns = driver.FindElements(By.Id("TenantTable"));
+            foreach(var column in tableColumns)
+            {
+                Assert.IsTrue(column.Enabled);
+                Assert.IsTrue(column.Displayed);
+            }
+
+            var TenancyName = driver.FindElement(By.XPath("//*[@id=\"TenantTable\"]/thead/tr/th[2]"));
+            Assert.IsTrue(TenancyName.Enabled);
+            Assert.IsTrue(TenancyName.Displayed);
+            Assert.AreEqual(TenancyName.Text,"Tenancy name");
+            Assert.AreEqual(TenancyName.GetAttribute("class"), "sorting");
+            Assert.AreEqual(TenancyName.GetAttribute("aria-controls"), "TenantTable");
+            Assert.AreEqual(TenancyName.GetAttribute("aria-label"), "Tenancy name: activate to sort column ascending");
+
+            var Name = driver.FindElement(By.XPath("//*[@id=\"TenantTable\"]/thead/tr/th[3]"));
+            Assert.IsTrue(Name.Enabled);
+            Assert.IsTrue(Name.Displayed);
+            Assert.AreEqual(Name.Text, "Name");
+            Assert.AreEqual(Name.GetAttribute("class"), "sorting");
+            Assert.AreEqual(Name.GetAttribute("aria-controls"), "TenantTable");
+            Assert.AreEqual(Name.GetAttribute("aria-label"), "Name: activate to sort column ascending");
+
+            var Tier = driver.FindElement(By.XPath("//*[@id=\"TenantTable\"]/thead/tr/th[4]"));
+            Assert.IsTrue(Tier.Enabled);
+            Assert.IsTrue(Tier.Displayed);
+            Assert.AreEqual(Tier.Text, "Tier");
+            Assert.AreEqual(Tier.GetAttribute("class"), "sorting");
+            Assert.AreEqual(Tier.GetAttribute("aria-controls"), "TenantTable");
+            Assert.AreEqual(Tier.GetAttribute("aria-label"), "Tier: activate to sort column ascending");
+
+            var isActive = driver.FindElement(By.XPath("//*[@id=\"TenantTable\"]/thead/tr/th[5]"));
+            Assert.IsTrue(isActive.Enabled);
+            Assert.IsTrue(isActive.Displayed);
+            Assert.AreEqual(isActive.Text, "Is Active");
+            Assert.AreEqual(isActive.GetAttribute("aria-label"), "Is Active");
+            Assert.AreEqual(isActive.GetAttribute("class"), "sorting_disabled");
+
+            var actions = driver.FindElement(By.XPath("//*[@id=\"TenantTable\"]/thead/tr/th[6]"));
+            Assert.IsTrue(actions.Enabled);
+            Assert.IsTrue(actions.Displayed);
+            Assert.AreEqual(actions.Text, "Actions");
+            Assert.AreEqual(actions.GetAttribute("aria-controls"), "TenantTable");
+            Assert.AreEqual(actions.GetAttribute("aria-label"), "Actions: activate to sort column ascending");
+        }
 
         [Test]
         public void TenentsPage_EditIconTest()
         {
             // to open tenancy page
-            TenantsPage_WhenClickOnTenants_MustOpneTenantsPage();
+            TenantsPage_OpenPage();
             
             var editIcon = driver.FindElement
                 (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[5]/td[6]/a[1]"));
@@ -342,7 +443,7 @@ namespace AdminPageTests
         public void TenentsPage_DeleteIConTest()
         {
             // to open tenancy page
-            TenantsPage_WhenClickOnTenants_MustOpneTenantsPage();
+            TenantsPage_OpenPage();
 
             var deleteIcon = driver.FindElement
                 (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[6]/a[2]"));
@@ -375,12 +476,11 @@ namespace AdminPageTests
             Assert.True(cancelBtn.Displayed);
         }
 
-
         [Test]
         public void TenantsPage_UserLoginIconTest()
         {
             // to open tenancy page
-            TenantsPage_WhenClickOnTenants_MustOpneTenantsPage();
+            TenantsPage_OpenPage();
 
             var loginUserIcon = driver.FindElement
                 (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[1]/a"));
@@ -430,6 +530,48 @@ namespace AdminPageTests
             Assert.True(XIcon.Enabled);
             Assert.True(XIcon.Displayed);
             XIcon.Click();
+        }
+
+        [Test]
+        public void TenantsPage_DataTableInfoTest()
+        {
+            // to open Tenants page 
+            TenantsPage_OpenPage();
+
+            var tableInfo = driver.FindElement(By.Id("TenantTable_info"));
+            Assert.IsTrue(tableInfo.Enabled);
+            Assert.IsTrue(tableInfo.Displayed);
+            Assert.AreEqual(tableInfo.GetAttribute("role"), "status");
+            Assert.IsTrue(tableInfo.Text.Contains("Showing") && tableInfo.Text.Contains("entries"));
+            Assert.AreEqual(tableInfo.GetAttribute("aria-live"), "polite");
+            Assert.AreEqual(tableInfo.GetAttribute("class"), "dataTables_info");
+        }
+
+        [Test]
+        public void TenantsPage_CopyRightTest()
+        {
+            // to open tenancy page
+            TenantsPage_OpenPage();
+
+            var copyRight = driver.FindElement
+                (By.XPath("/html/body/footer/div/div/div[1]/span"));
+            Assert.IsTrue(copyRight.Enabled);
+            Assert.IsTrue(copyRight.Displayed);
+            Assert.AreEqual(copyRight.Text, ("2025 © CTDOT (Ver .)"));
+            Assert.AreEqual(copyRight.GetAttribute("class"), "m-footer__copyright");
+        }
+
+        [Test]
+        public void TenantsPage_MinimizeToggleBtnTest()
+        {
+            // to open tenancy page
+            TenantsPage_OpenPage();
+
+            var toggleIcon = driver.FindElement(By.Id("m_aside_left_minimize_toggle"));
+            Assert.IsTrue(toggleIcon.Enabled);
+            Assert.IsTrue(toggleIcon.Displayed);
+            Assert.AreEqual(toggleIcon.GetAttribute("href"), "javascript:;");
+            Assert.AreEqual(toggleIcon.GetAttribute("class"), "m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-desktop-inline-block  ");
         }
     }
 }

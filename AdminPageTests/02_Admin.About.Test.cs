@@ -3,6 +3,7 @@ using OpenQA.Selenium.Chrome;
 
 namespace AdminPageTests
 {
+    [TestFixture]
     public class AdminAboutPageTest : IDisposable
     {
         private IWebDriver driver;
@@ -42,173 +43,203 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void AboutPage_WhenClickAboutButton_MustOpenAboutPage()
+        public void AboutPage_AboutOptionTest()
+        {
+            var aboutOption = driver.FindElement
+                (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[2]/a"));
+            Assert.IsTrue(aboutOption.Enabled);
+            Assert.IsTrue(aboutOption.Displayed);
+            Assert.AreEqual(aboutOption.Text,"About");
+            Assert.AreEqual(aboutOption.GetAttribute("target"),"_self");
+            Assert.AreEqual(aboutOption.GetAttribute("custom-data"),"About");
+            Assert.AreEqual(aboutOption.GetAttribute("href"), "http://ec2-34-226-24-71.compute-1.amazonaws.com/App/About");
+
+            var aboutOptionTitle = driver.FindElement(By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[2]/a/span/span"));
+            Assert.IsTrue(aboutOptionTitle.Enabled);
+            Assert.IsTrue(aboutOptionTitle.Displayed);
+            Assert.AreEqual(aboutOptionTitle.Text,"About");
+            Assert.AreEqual(aboutOptionTitle.GetAttribute("class"),"title");
+
+            string Icon = "m-menu__link-icon flaticon-interface-10";
+            var aboutOptionIcon = driver.FindElement(By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[2]/a/i"));
+            Assert.IsTrue(aboutOptionIcon.Enabled);
+            Assert.IsTrue(aboutOptionIcon.Displayed);
+            Assert.AreEqual(aboutOptionIcon.GetAttribute("class"),Icon);
+        }
+
+        [Test]
+        public void AboutPage_OpenPage()
         {
             var aboutBtn = driver.FindElement
                 (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[2]/a"));
             aboutBtn.Click();
-
         }
 
-
         [Test]
-        public void AboudPage_PageTitleTest()
+        public void AboutPage_TopBarUserNameTest()
         {
             // to open about page
-            AboutPage_WhenClickAboutButton_MustOpenAboutPage();
+            AboutPage_OpenPage();
 
-            var title = driver.FindElement(By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
-            Assert.AreEqual("About", title.Text);
-            Assert.True(title.Displayed);
-            Assert.True(title.Enabled);
+            var username = driver.FindElement(By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
+            Assert.IsTrue(username.Enabled);
+            Assert.IsTrue(username.Displayed);
+            Assert.AreEqual(username.Text, "HI,");
+            Assert.AreEqual(username.GetAttribute("class"), "m-topbar__username");
+
+            var admin = driver.FindElement(By.Id("UserName"));
+            Assert.IsTrue(admin.Enabled);
+            Assert.IsTrue(admin.Displayed);
         }
 
         [Test]
-        public void AboutPage_WhenClickOnLeftBarIcon_MustOpenOrCloseAllOptions()
+        public void AboutPage_LogoutBtnTest()
         {
             // to open about page
-            AboutPage_WhenClickAboutButton_MustOpenAboutPage();
+            AboutPage_OpenPage();
 
-            var leftBarIcon = driver.FindElement
-                (By.XPath("//*[@id=\"m_aside_left_minimize_toggle\"]/span"));
-            leftBarIcon.Click();
-            Assert.True(leftBarIcon.Displayed);
-            Assert.True(leftBarIcon.Enabled);
-        }
-
-        [Test]
-        public void AboutPage_WhenClicOnDashboardBtn_MustGoToDashboardPage()
-        {
-            // to open about page
-            AboutPage_WhenClickAboutButton_MustOpenAboutPage();
-
-            var dashboardBtn = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
-            Assert.AreEqual(dashboardBtn.Text, "Dashboard");
-            Assert.True(dashboardBtn.Enabled);
-            Assert.True(dashboardBtn.Displayed);
-            var UrlBeforeClick = driver.Url;
-            dashboardBtn.Click();
-            var UrlAfterClick = driver.Url;
-            Assert.AreNotEqual(UrlAfterClick, UrlBeforeClick);
-        }
-
-        [Test]
-        public void AboutPage_WhenOpenDashboardPage_MustDisplayDashboardParagraph()
-        {
-            // to open about page
-            AboutPage_WhenClickAboutButton_MustOpenAboutPage();
-
-            var paragraph = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[2]/div/div/div/div/p[1]"));
-
-            Assert.True(paragraph.Displayed);
-        }
-
-        [Test]
-        public void AboutPage_WhenClickOnHiAdmin_MustOpenLogoutOption()
-        {
-            // to open about page
-            AboutPage_WhenClickAboutButton_MustOpenAboutPage();
-
-            var HiAdminBtn = driver.FindElement(By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
-            HiAdminBtn.Click();
-        }
-
-        [Test]
-        public void AdminPaeAbout_WhenCliclOnLogoutBtn_MustBeEnabled()
-        {
-            // to ckick on hi admin 
-            AboutPage_WhenClickOnHiAdmin_MustOpenLogoutOption();
+            var username = driver.FindElement
+                (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
+            username.Click();
 
             var logoutBtn = driver.FindElement
                 (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/div/div/div/div/ul/li[4]/a"));
-            Assert.True(logoutBtn.Displayed);
-            Assert.True(logoutBtn.Enabled);
-        }
+            Assert.IsTrue(logoutBtn.Enabled);
+            Assert.IsTrue(logoutBtn.Displayed);
+            Assert.AreEqual(logoutBtn.Text,"Logout");
 
-        [Test]
-        public void AboutPage_WhenClickOnLogoutBtn_MustGoLoginPage()
-        {
-            // to ckick on hi admin 
-            AboutPage_WhenClickOnHiAdmin_MustOpenLogoutOption();
-
-            var adminPageUrl = driver.Url;
-            var logoutBtn = driver.FindElement
-                           (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/div/div/div/div/ul/li[4]/a"));
+            var urlBeforeClick = driver.Url;
             logoutBtn.Click();
-            var loginPageUrl = driver.Url;
-
-            Assert.AreNotEqual(adminPageUrl,loginPageUrl);
+            var urlAfterClick = driver.Url;
+            Assert.AreNotEqual(urlAfterClick,urlBeforeClick);
+            Assert.IsTrue(urlAfterClick.Contains("Login"));
         }
 
         [Test]
-        public void AboutPage_WhenClickOnDashboardBtn_MustBeEnabledAndDisplayed()
+        public void AboutPage_SubHeaderTitleTest()
         {
             // to open about page
-            AboutPage_WhenClickAboutButton_MustOpenAboutPage();
+            AboutPage_OpenPage();
 
-            var dashboardBtn = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
+            var subTitle = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
 
-            Assert.True(dashboardBtn.Displayed);
-            Assert.True(dashboardBtn.Enabled);
+            Assert.IsTrue(subTitle.Enabled);
+            Assert.IsTrue(subTitle.Displayed);
+            Assert.AreEqual(subTitle.Text, "Asset Classes");
         }
 
         [Test]
-        public void AboutPage_WhenClickOnDashboardBtn_MustGoToDashboardBtn()
+        public void AboutPage_DashboardNavigationLinkTest()
         {
             // to open about page
-            AboutPage_WhenClickAboutButton_MustOpenAboutPage();
+            AboutPage_OpenPage();
 
-            var AdminPageUrl = driver.Url;
-            var dashboardBtn = driver.FindElement
-               (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
-            dashboardBtn.Click();
+            var dashbaordBtn = driver.FindElement(
+                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
+            Assert.True(dashbaordBtn.Enabled);
+            Assert.True(dashbaordBtn.Displayed);
+            Assert.AreEqual(dashbaordBtn.Text, "Dashboard");
+            Assert.AreEqual(dashbaordBtn.GetAttribute("class"), "m-nav__link-text");
 
-            var dashbaordPageUrl = driver.Url;
-            Assert.AreNotEqual(dashbaordPageUrl,AdminPageUrl);
-
-        }
-
-        [Test]
-        public void DashboardPage_ParagraphTest()
-        {
-            // to open dashboard page
-            AboutPage_WhenClickOnDashboardBtn_MustGoToDashboardBtn();
-
-            var paragraph = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[2]/div/div/h3/span"));
-            var message = "Welcome to the CTDOT Transit Asset Management Database!\r\n\r\nThis database stores asset inventory data of Connecticut transit providers. Please use the menu bar on the left or dashboard controls to view, edit, create or delete assets. Note that any edits made by a transit operator must be approved before they can be incorporated in the inventory.";
-            Assert.True(paragraph.Displayed);
-            Assert.True(paragraph.Enabled);
-            Assert.AreEqual(message,paragraph.Text);
-        }
-        
-        [Test]
-        public void AboutPage_WhenClickOnLogo_MustBeEnabledAndDisplayed()
-        {
-            // to open about page
-            AboutPage_WhenClickAboutButton_MustOpenAboutPage();
-
-            var logo = driver.FindElement
-                (By.XPath("//*[@id=\"m_header\"]/div/div/div[1]/div/div[1]/a/img"));
-            Assert.True(logo.Enabled);
-            Assert.True(logo.Displayed);
-        }
-
-        [Test]
-        public void AboutPage_WhenClickOnLogoMustOpenSamePage()
-        {
-            // to open about page
-            AboutPage_WhenClickAboutButton_MustOpenAboutPage();
-
-            var logo = driver.FindElement
-                (By.XPath("//*[@id=\"m_header\"]/div/div/div[1]/div/div[1]/a/img"));
-            var UrlBeforeClick = driver.Url;
-            logo.Click();
+            var urlBeforeClick = driver.Url;
+            dashbaordBtn.Click();
             var UrlAfterClick = driver.Url;
-            Assert.AreNotEqual(UrlBeforeClick, UrlAfterClick);
+            Assert.AreNotEqual(UrlAfterClick, urlBeforeClick);
+        }
+
+        [Test]
+        public void AboutPage_AboutNavigationLinkTest()
+        {
+            // to open about page
+            AboutPage_OpenPage();
+
+            var about = driver.FindElement(
+                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[3]/span"));
+            Assert.True(about.Enabled);
+            Assert.True(about.Displayed);
+            Assert.AreEqual(about.Text, "About");
+            Assert.AreEqual(about.GetAttribute("class"), "m-nav__link-text");
+        }
+
+        [Test]
+        public void AboutPage_SeperatorBetweenNavigationLinksTest()
+        {
+            // to open about page
+            AboutPage_OpenPage();
+
+            var seperator = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[2]"));
+
+            Assert.IsTrue(seperator.Enabled);
+            Assert.IsTrue(seperator.Displayed);
+            Assert.AreEqual(seperator.GetAttribute("class"), "m-nav__separator");
+        }
+
+        [Test]
+        public void AboutPage_ParagraphTest()
+        {
+            // to open about page
+            AboutPage_OpenPage();
+
+            var paragraph1Text = "The Transit Asset Management Database is a relational database that integrates the asset inventory and condition data used to develop Connecticut DOT’s Transit Asset Management Plan (TAMP), as well as the Group TAMP for Tier II providers in Connecticut. Using a web-based user interface, agencies can enter data with review and approval by CTDOT.";
+            var paragraph1 = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[2]/div/div/div/div/p[1]"));
+            Assert.IsTrue(paragraph1.Enabled);
+            Assert.IsTrue(paragraph1.Displayed);
+            Assert.AreEqual(paragraph1.TagName,"p");
+            Assert.AreEqual(paragraph1Text,paragraph1.Text);
+
+            var paragraphsOrderList = driver.FindElements
+                (By.CssSelector("body > div.m-grid.m-grid--hor.m-grid--root.m-page > div > div.m-grid__item.m-grid__item--fluid.m-wrapper > div.m-content > div > div > div > div > ol"));
+            foreach(var paragraph in paragraphsOrderList)
+            {
+                Assert.IsTrue(paragraph.Enabled);
+                Assert.IsTrue(paragraph.Displayed);
+            }
+
+            var paragraph2Text = "The Database stores data on facilities, revenue vehicles, fixed guideway, and equipment.";
+            var paragraph2 = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[2]/div/div/div/div/p[3]"));
+            Assert.IsTrue(paragraph2.Enabled);
+            Assert.IsTrue(paragraph2.Displayed);
+            Assert.AreEqual(paragraph2.TagName, "p");
+            Assert.AreEqual(paragraph2Text, paragraph2.Text);
+
+            var paragraph3Text = "Group Plan members update the Database with inventory, condition, and other data for revenue vehicles (rolling stock) and equipment (non-revenue service vehicles).";
+            var paragraph3 = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[2]/div/div/div/div/p[4]"));
+            Assert.IsTrue(paragraph3.Enabled);
+            Assert.IsTrue(paragraph3.Displayed);
+            Assert.AreEqual(paragraph3.TagName, "p");
+            Assert.AreEqual(paragraph3Text, paragraph3.Text);
+        }
+
+        [Test]
+        public void AboutPage_CopyRightTest()
+        {
+            // to open about page
+            AboutPage_OpenPage();
+
+            var copyRight = driver.FindElement
+                (By.XPath("/html/body/footer/div/div/div[1]/span"));
+            Assert.IsTrue(copyRight.Enabled);
+            Assert.IsTrue(copyRight.Displayed);
+            Assert.AreEqual(copyRight.Text, ("2025 © CTDOT (Ver .)"));
+            Assert.AreEqual(copyRight.GetAttribute("class"), "m-footer__copyright");
+        }
+
+        [Test]
+        public void AboutPage_MinimizeToggleBtnTest()
+        {
+            // to open about page
+            AboutPage_OpenPage();
+
+            var toggleIcon = driver.FindElement(By.Id("m_aside_left_minimize_toggle"));
+            Assert.IsTrue(toggleIcon.Enabled);
+            Assert.IsTrue(toggleIcon.Displayed);
+            Assert.AreEqual(toggleIcon.GetAttribute("href"), "javascript:;");
+            Assert.AreEqual(toggleIcon.GetAttribute("class"), "m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-desktop-inline-block  ");
         }
     }
 }

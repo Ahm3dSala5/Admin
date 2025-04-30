@@ -181,6 +181,7 @@ namespace AdminPageTests
             var admin = driver.FindElement(By.Id("UserName"));
             Assert.IsTrue(admin.Enabled);
             Assert.IsTrue(admin.Displayed);
+            Assert.AreEqual(admin.GetAttribute("style"), "cursor: pointer; margin-bottom: -1.5rem;");
         }
 
         [Test]
@@ -213,11 +214,12 @@ namespace AdminPageTests
             OrginizationTypesPage_OpenPage();
 
             var subTitle = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1"));
 
             Assert.IsTrue(subTitle.Enabled);
             Assert.IsTrue(subTitle.Displayed);
             Assert.AreEqual(subTitle.Text, "Organization Types");
+            Assert.AreEqual(subTitle.GetAttribute("class"), "m-subheader__title m-subheader__title--separator");
         }
 
         [Test]
@@ -264,6 +266,7 @@ namespace AdminPageTests
 
             Assert.IsTrue(seperator.Enabled);
             Assert.IsTrue(seperator.Displayed);
+            Assert.AreEqual(seperator.Text,">");
             Assert.AreEqual(seperator.GetAttribute("class"), "m-nav__separator");
         }
 
@@ -275,36 +278,40 @@ namespace AdminPageTests
 
             var showLabel = driver.FindElement
                 (By.XPath("//*[@id=\"OrganizationTypesTable_length\"]/label"));
-            Assert.True(showLabel.Text.Contains("Show"));
             Assert.True(showLabel.Enabled);
             Assert.True(showLabel.Displayed);
+            Assert.True(showLabel.Text.Contains("Show"));
             showLabel.Click();
 
             var showValue = driver.FindElement(By.Name("OrganizationTypesTable_length"));
             Assert.True(showValue.Enabled);
             Assert.True(showValue.Displayed);
+            Assert.AreEqual(showValue.GetAttribute("aria-controls"), "OrganizationTypesTable");
+
             var selectedValue = new SelectElement(showValue);
             selectedValue.SelectByIndex(1);
         }
 
         [Test]
-        public void OrginizationTypePage_DataTableLengthTest()
+        public void OrginizationTypesPage_DataTableFilterTest()
         {
             // to open orgnization type page
             OrginizationTypesPage_OpenPage();
 
-            var showLabel = driver.FindElement
-                (By.XPath("//*[@id=\"OrganizationTypesTable_filter\"]/label"));
-            Assert.True(showLabel.Text.Contains("Search:"));
-            Assert.True(showLabel.Enabled);
-            Assert.True(showLabel.Displayed);
-            showLabel.Click();
+            var searchLabel = driver.FindElement
+                (By.XPath("//*[@id=\"AssetTypeTable_filter\"]/label"));
+            searchLabel.Click();
+            Assert.True(searchLabel.Enabled);
+            Assert.IsTrue(searchLabel.Displayed);
+            Assert.AreEqual(searchLabel.Text, "Search:");
 
-            var showValue = driver.FindElement(By.Name("OrganizationTypesTable_length"));
-            Assert.True(showValue.Enabled);
-            Assert.True(showValue.Displayed);
-            var selectedValue = new SelectElement(showValue);
-            selectedValue.SelectByIndex(1);
+            var searchInput = driver.FindElement
+                (By.XPath("//*[@id=\"AssetTypeTable_filter\"]/label/input"));
+            searchInput.SendKeys("Test");
+            Assert.True(searchInput.Enabled);
+            Assert.IsTrue(searchInput.Displayed);
+            Assert.AreEqual(searchInput.GetAttribute("type"), "Search");
+            Assert.AreEqual(searchInput.GetAttribute("aria-controls"), "OrganizationTypesTable");
         }
 
         [Test]
@@ -314,11 +321,11 @@ namespace AdminPageTests
             OrginizationTypesPage_OpenPage();
 
             var createBtn = driver.FindElement(By.Id("btnCreate"));
-            createBtn.Click();
             Assert.True(createBtn.Enabled);
             Assert.True(createBtn.Displayed);
-            Assert.AreEqual("Create", createBtn.Text);
+            Assert.AreEqual(createBtn.Text, "Create");
             Assert.AreEqual(createBtn.GetAttribute("class"), "btn btn-success btn-primary blue m-btn--wide m-btn--air");
+            createBtn.Click();
         }
 
         [Test]
@@ -333,13 +340,19 @@ namespace AdminPageTests
             Assert.True(orgnizationTypeLabel.Enabled);
             Assert.True(orgnizationTypeLabel.Displayed);
             Assert.AreEqual(orgnizationTypeLabel.Text, "Organization Type");
+            Assert.AreEqual(orgnizationTypeLabel.GetAttribute("for"), "OrganizationType");
+            Assert.AreEqual(orgnizationTypeLabel.GetAttribute("class"), "form-label");
 
             var orgnizationTypeInput = driver.FindElement(By.Id("OrgType"));
             Assert.True(orgnizationTypeInput.Enabled);
             Assert.True(orgnizationTypeInput.Displayed);
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("type"), "text");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("maxlength"), "255");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("data-val-length-max"), "255");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("class"), "validate form-control");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("data-val-required"), "The OrgType field is required.");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("data-val-length"), "The field OrgType must be a string with a maximum length of 255.");
             orgnizationTypeInput.SendKeys("Test Name");
-            var requiredOrgnizationType = orgnizationTypeInput.GetAttribute("data-val-required");
-            Assert.AreEqual(requiredOrgnizationType, "The OrgType field is required.");
 
 
             var descriptionLabel = driver.FindElement
@@ -348,44 +361,61 @@ namespace AdminPageTests
             Assert.True(descriptionLabel.Enabled);
             Assert.True(descriptionLabel.Displayed);
             Assert.AreEqual(descriptionLabel.Text, "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("for"), "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("class"), "form-label-default ");
 
             var descriptionInput = driver.FindElement(By.Id("Description"));
             Assert.True(descriptionInput.Enabled);
             Assert.True(descriptionInput.Displayed);
             descriptionInput.SendKeys("Test");
-            var requiredDescriptionLength = descriptionInput.GetAttribute("data-val-length");
-            Assert.AreEqual(requiredDescriptionLength,
-                "The field Description must be a string with a maximum length of 500.");
+            Assert.AreEqual(descriptionInput.GetAttribute("type"), "textarea");
+            Assert.AreEqual(descriptionInput.GetAttribute("maxlength"), "500");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length-max"), "500");
+            Assert.AreEqual(descriptionInput.GetAttribute("class"), "validate form-control");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length"), "The field Description must be a string with a maximum length of 500.");
 
-            var isActive = driver.FindElement
+            var IsActiveLabel = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[3]/div/div/div/label"));
-            Assert.AreEqual(isActive.Text,"Is Active");
-            Assert.True(isActive.Displayed);
-            Assert.True(isActive.Enabled);
-            isActive.Click();
+            Assert.AreEqual(IsActiveLabel.Text, "Is Active");
+            Assert.True(IsActiveLabel.Enabled);
+            Assert.True(IsActiveLabel.Displayed);
+            Assert.AreEqual(IsActiveLabel.GetAttribute("for"), "IsActive");
+            Assert.AreEqual(IsActiveLabel.GetAttribute("class"), "custom-control-label");
+
+            var isActiveValue = driver.FindElement(By.Id("IsActive"));
+            Assert.IsTrue(isActiveValue.Enabled);
+            Assert.AreEqual(isActiveValue.GetAttribute("type"), "checkbox");
+            Assert.AreEqual(isActiveValue.GetAttribute("class"), "custom-control-input form-control");
 
             var saveBtn = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[4]/button[1]"));
-            var saveBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(saveBtn.Text, "Save");
             Assert.True(saveBtn.Enabled);
             Assert.True(saveBtn.Displayed);
+            Assert.AreEqual(saveBtn.Text, "Save");
+            Assert.AreEqual(saveBtn.GetAttribute("type"), "submit");
+            Assert.AreEqual(saveBtn.GetAttribute("class"), "btn btn-primary waves-effect");
 
             var cancelBtn = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[4]/button[2]"));
-            var cancelBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("type"), "button");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "btn btn-default waves-effect");
         }
 
         [Test]
-        public void OrgnizationTypePage_ReOrderTableTest()
+        public void OrgnizationTypePage_OrgnizationTypesTableTest()
         {
             // to open orgnization type page
             OrginizationTypesPage_OpenPage();
+
+            var tableColumns = driver.FindElements(By.Id("OrganizationTypesTable"));
+            foreach(var column in tableColumns)
+            {
+                Assert.IsTrue(column.Enabled);
+                Assert.IsTrue(column.Displayed);
+            }
 
             var orgnizationType = driver.FindElement
                 (By.XPath("//*[@id=\"OrganizationTypesTable\"]/thead/tr/th[1]"));
@@ -394,7 +424,7 @@ namespace AdminPageTests
             Assert.AreEqual(orgnizationType.Text, "Organization Type");
             Assert.AreEqual(orgnizationType.GetAttribute("class"), "sorting_asc");
             Assert.AreEqual(orgnizationType.GetAttribute("aria-sort"), "ascending");
-            Assert.AreEqual(orgnizationType.GetAttribute("aria-contorls"), "OrganizationTypesTable");
+            Assert.AreEqual(orgnizationType.GetAttribute("aria-controls"), "OrganizationTypesTable");
             Assert.AreEqual(orgnizationType.GetAttribute("aria-label"), "Organization Type: activate to sort column descending");
             orgnizationType.Click();
 
@@ -417,14 +447,14 @@ namespace AdminPageTests
             Assert.AreEqual(Active.GetAttribute("class"), "sorting_disabled");
             Active.Click();
 
-            var action = driver.FindElement
+            var Actions = driver.FindElement
                 (By.XPath("//*[@id=\"OrganizationTypesTable\"]/thead/tr/th[4]"));
-            Assert.True(action.Enabled);
-            Assert.IsTrue(action.Displayed);
-            Assert.AreEqual(action.GetAttribute("class"),"sorting");
-            Assert.AreEqual(action.GetAttribute("aria-controls"), "OrganizationTypesTable");
-            Assert.AreEqual(action.GetAttribute("aria-label"), "Actions: activate to sort column ascending");
-            Assert.AreEqual(action.Text, "Actions");
+            Assert.True(Actions.Enabled);
+            Assert.IsTrue(Actions.Displayed);
+            Assert.AreEqual(Actions.Text, "Actions");
+            Assert.AreEqual(Actions.GetAttribute("class"),"sorting");
+            Assert.AreEqual(Actions.GetAttribute("aria-controls"), "OrganizationTypesTable");
+            Assert.AreEqual(Actions.GetAttribute("aria-label"), "Actions: activate to sort column ascending");
         }
 
         [Test]
@@ -463,13 +493,19 @@ namespace AdminPageTests
             Assert.True(orgnizationTypeLabel.Enabled);
             Assert.True(orgnizationTypeLabel.Displayed);
             Assert.AreEqual(orgnizationTypeLabel.Text, "Organization Type");
+            Assert.AreEqual(orgnizationTypeLabel.GetAttribute("for"), "OrganizationType");
+            Assert.AreEqual(orgnizationTypeLabel.GetAttribute("class"), "form-label");
 
             var orgnizationTypeInput = driver.FindElement(By.Id("OrgType"));
             Assert.True(orgnizationTypeInput.Enabled);
             Assert.True(orgnizationTypeInput.Displayed);
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("type"),"text");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("maxlength"),"255");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("data-val-length-max"),"255");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("class"),"validate form-control");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("data-val-required"), "The OrgType field is required.");
+            Assert.AreEqual(orgnizationTypeInput.GetAttribute("data-val-length"), "The field OrgType must be a string with a maximum length of 255.");
             orgnizationTypeInput.SendKeys("Test Name");
-            var requiredOrgnizationType = orgnizationTypeInput.GetAttribute("data-val-required");
-            Assert.AreEqual(requiredOrgnizationType, "The OrgType field is required.");
 
 
             var descriptionLabel = driver.FindElement
@@ -478,37 +514,48 @@ namespace AdminPageTests
             Assert.True(descriptionLabel.Enabled);
             Assert.True(descriptionLabel.Displayed);
             Assert.AreEqual(descriptionLabel.Text, "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("for"), "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("class"), "form-label-default ");
 
             var descriptionInput = driver.FindElement(By.Id("Description"));
             Assert.True(descriptionInput.Enabled);
             Assert.True(descriptionInput.Displayed);
             descriptionInput.SendKeys("Test");
-            var requiredDescriptionLength = descriptionInput.GetAttribute("data-val-length");
-            Assert.AreEqual(requiredDescriptionLength,
-                "The field Description must be a string with a maximum length of 500.");
-
-            var isActive = driver.FindElement
+            Assert.AreEqual(descriptionInput.GetAttribute("type"), "textarea");
+            Assert.AreEqual(descriptionInput.GetAttribute("maxlength"), "500");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length-max"), "500");
+            Assert.AreEqual(descriptionInput.GetAttribute("class"), "validate form-control");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length"), "The field Description must be a string with a maximum length of 500.");
+          
+            var IsActiveLabel = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[3]/div/div/div/label"));
-            Assert.AreEqual(isActive.Text, "Is Active");
-            Assert.True(isActive.Displayed);
-            Assert.True(isActive.Enabled);
-            isActive.Click();
+            Assert.AreEqual(IsActiveLabel.Text, "Is Active");
+            Assert.True(IsActiveLabel.Enabled);
+            Assert.True(IsActiveLabel.Displayed);
+            Assert.AreEqual(IsActiveLabel.GetAttribute("for"),"IsActive");
+            Assert.AreEqual(IsActiveLabel.GetAttribute("class"), "custom-control-label");
+
+            var isActiveValue = driver.FindElement(By.Id("IsActive"));
+            Assert.IsTrue(isActiveValue.Enabled);
+            //Assert.IsTrue(isActiveValue.Displayed);
+            Assert.AreEqual(isActiveValue.GetAttribute("type"),"checkbox");
+            Assert.AreEqual(isActiveValue.GetAttribute("class"), "custom-control-input form-control");
 
             var saveBtn = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[4]/button[1]"));
-            var saveBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(saveBtn.Text, "Save");
             Assert.True(saveBtn.Enabled);
             Assert.True(saveBtn.Displayed);
+            Assert.AreEqual(saveBtn.Text, "Save");
+            Assert.AreEqual(saveBtn.GetAttribute("type"), "submit");
+            Assert.AreEqual(saveBtn.GetAttribute("class"), "btn btn-primary waves-effect");
 
             var cancelBtn = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[4]/button[2]"));
-            var cancelBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("type"), "button");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "btn btn-default waves-effect");
         }
 
         [Test]
@@ -542,24 +589,37 @@ namespace AdminPageTests
                 (By.XPath("//*[@id=\"OrganizationTypesTable\"]/tbody/tr[1]/td[4]/a[2]"));
             deleteIcon.Click();
 
-            var confirmWindo = driver.FindElement(By.XPath("/html/body/div[4]/div/div[1]"));
-            Assert.True(confirmWindo.Enabled);
+            /////// swal modal is warning modal  ////////
+            var swalModal = driver.FindElement(By.XPath("/html/body/div[4]/div"));
+            Assert.IsTrue(swalModal.Enabled);
+            Assert.IsTrue(swalModal.Displayed);
+            Assert.AreEqual(swalModal.GetAttribute("role"),"dialog");
+            Assert.AreEqual(swalModal.GetAttribute("class"),"swal-modal");
 
-            var warninigMessage = driver.FindElement
-                (By.XPath("/html/body/div[4]/div/div[2]"));
-            Assert.AreEqual(warninigMessage.Text, "Are you sure?");
+            var swalTitle = driver.FindElement(By.XPath("/html/body/div[4]/div/div[2]"));
+            Assert.IsTrue(swalTitle.Enabled);
+            Assert.IsTrue(swalTitle.Displayed);
+            Assert.AreEqual(swalTitle.Text, "Are you sure?");
+            Assert.AreEqual(swalTitle.GetAttribute("class"), "swal-title");
+
+            var swalIcon = driver.FindElement(By.XPath("/html/body/div[4]/div/div[1]"));
+            Assert.IsTrue(swalIcon.Enabled);
+            Assert.IsTrue(swalIcon.Displayed);
+            Assert.AreEqual(swalIcon.GetAttribute("class"), "swal-icon swal-icon--warning");
 
             var yesBtn = driver.FindElement
                 (By.XPath("/html/body/div[4]/div/div[3]/div[2]/button"));
-            Assert.AreEqual(yesBtn.Text, "Yes");
             Assert.True(yesBtn.Enabled);
             Assert.True(yesBtn.Displayed);
+            Assert.AreEqual(yesBtn.Text, "Yes");
+            Assert.AreEqual(yesBtn.GetAttribute("class"), "swal-button swal-button--confirm");
 
-            var cancelBtn = driver.FindElement(
-                By.XPath("/html/body/div[4]/div/div[3]/div[1]/button"));
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            var cancelBtn = driver.FindElement
+                (By.XPath("/html/body/div[4]/div/div[3]/div[1]/button"));
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "swal-button swal-button--cancel");
         }
 
         [Test]
@@ -569,18 +629,22 @@ namespace AdminPageTests
             OrginizationTypesPage_OpenPage();
 
             var nextBtn = driver.FindElement(By.Id("OrganizationTypesTable_next"));
-            Assert.AreEqual(nextBtn.Text, "Next");
             Assert.True(nextBtn.Enabled);
             Assert.True(nextBtn.Displayed);
+            Assert.AreEqual(nextBtn.Text, "Next");
+            Assert.AreEqual(nextBtn.GetAttribute("class"), "paginate_button next disabled");
+            Assert.AreEqual(nextBtn.GetAttribute("aria-controls"), "OrganizationTypesTable");
             nextBtn.Click();
 
             var previoustBtn = driver.FindElement(By.Id("OrganizationTypesTable_previous"));
-            Assert.AreEqual(previoustBtn.Text, "Previous");
             Assert.True(previoustBtn.Enabled);
             Assert.True(previoustBtn.Displayed);
+            Assert.AreEqual(previoustBtn.Text, "Previous");
+            Assert.AreEqual(previoustBtn.GetAttribute("aria-controls"), "OrganizationTypesTable");
+            Assert.AreEqual(previoustBtn.GetAttribute("class"), "paginate_button previous disabled");
             previoustBtn.Click();
 
-            var pages = driver.FindElements(By.XPath("OrganizationTypesTable_paginate"));
+            var pages = driver.FindElements(By.Id("OrganizationTypesTable_paginate"));
             foreach(var page in pages)
             {
                 Assert.IsTrue(page.Enabled);

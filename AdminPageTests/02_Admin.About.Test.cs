@@ -90,6 +90,7 @@ namespace AdminPageTests
             var admin = driver.FindElement(By.Id("UserName"));
             Assert.IsTrue(admin.Enabled);
             Assert.IsTrue(admin.Displayed);
+            Assert.AreEqual(admin.GetAttribute("style"), "cursor: pointer; margin-bottom: -1.5rem;");
         }
 
         [Test]
@@ -122,11 +123,12 @@ namespace AdminPageTests
             AboutPage_OpenPage();
 
             var subTitle = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1"));
 
             Assert.IsTrue(subTitle.Enabled);
             Assert.IsTrue(subTitle.Displayed);
-            Assert.AreEqual(subTitle.Text, "Asset Classes");
+            Assert.AreEqual(subTitle.Text, "About");
+            Assert.AreEqual(subTitle.GetAttribute("class"), "m-subheader__title m-subheader__title--separator");
         }
 
         [Test]
@@ -135,15 +137,15 @@ namespace AdminPageTests
             // to open about page
             AboutPage_OpenPage();
 
-            var dashbaordBtn = driver.FindElement(
-                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
-            Assert.True(dashbaordBtn.Enabled);
-            Assert.True(dashbaordBtn.Displayed);
-            Assert.AreEqual(dashbaordBtn.Text, "Dashboard");
-            Assert.AreEqual(dashbaordBtn.GetAttribute("class"), "m-nav__link-text");
+            var dashbaordNavLink = driver.FindElement(
+                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a"));
+            Assert.True(dashbaordNavLink.Enabled);
+            Assert.True(dashbaordNavLink.Displayed);
+            Assert.AreEqual(dashbaordNavLink.Text, "Dashboard");
+            Assert.AreEqual(dashbaordNavLink.GetAttribute("class"), "m-nav__link");
 
             var urlBeforeClick = driver.Url;
-            dashbaordBtn.Click();
+            dashbaordNavLink.Click();
             var UrlAfterClick = driver.Url;
             Assert.AreNotEqual(UrlAfterClick, urlBeforeClick);
         }
@@ -154,12 +156,12 @@ namespace AdminPageTests
             // to open about page
             AboutPage_OpenPage();
 
-            var about = driver.FindElement(
+            var aboutNavLink = driver.FindElement(
                 By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[3]/span"));
-            Assert.True(about.Enabled);
-            Assert.True(about.Displayed);
-            Assert.AreEqual(about.Text, "About");
-            Assert.AreEqual(about.GetAttribute("class"), "m-nav__link-text");
+            Assert.True(aboutNavLink.Enabled);
+            Assert.True(aboutNavLink.Displayed);
+            Assert.AreEqual(aboutNavLink.Text, "About");
+            Assert.AreEqual(aboutNavLink.GetAttribute("class"), "m-nav__link-text");
         }
 
         [Test]
@@ -173,6 +175,7 @@ namespace AdminPageTests
 
             Assert.IsTrue(seperator.Enabled);
             Assert.IsTrue(seperator.Displayed);
+            Assert.AreEqual(seperator.Text, ">");
             Assert.AreEqual(seperator.GetAttribute("class"), "m-nav__separator");
         }
 

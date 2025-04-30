@@ -12,7 +12,7 @@ namespace AdminPageTests
 
         public void Dispose()
         {
-            driver.Dispose();
+           driver.Dispose();
         }
 
         [TearDown]
@@ -22,7 +22,6 @@ namespace AdminPageTests
             {
                driver.Quit();
             }
-
         }
 
         [SetUp]
@@ -73,61 +72,52 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void Tenants_WhenClickOnHiAdmin_MustShowingLogoutOption()
-        {
-            var HiAdmin = driver.FindElement
-                (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
-            HiAdmin.Click();
-
-            Assert.AreEqual(HiAdmin.Text, "HI,");
-            Assert.True(HiAdmin.Displayed);
-            Assert.True(HiAdmin.Enabled);
-        }
-
-        [Test]
-        public void TenantsPage_HiAdminParagraph()
-        {
-            var HiAdminOption = driver.FindElement
-                (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
-            HiAdminOption.Click();
-            Assert.True(HiAdminOption.Displayed);
-            Assert.True(HiAdminOption.Enabled);
-        }
-
-        [Test]
-        public void TenantsPage_LogoutBtnTest()
-        {
-            // to click on hi admin btn
-            TenantsPage_HiAdminParagraph();
-
-            var LogoutBtn = driver.FindElement
-                (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/div/div/div/div/ul/li[4]/a"));
-
-            Assert.AreEqual(LogoutBtn.Text,"Logout");
-            Assert.True(LogoutBtn.Displayed);
-            Assert.True(LogoutBtn.Enabled);
-        }
-
-        [Test]
-        public void TenantsPage_WhenClickOnLogoutBtn_MustGoToSiginInPage()
-        {
-            // to click on hi admin btn
-            TenantsPage_HiAdminParagraph();
-
-            var LogoutBtn = driver.FindElement
-                (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/div/div/div/div/ul/li[4]/a"));
-            var AdmintUrl = driver.Url;
-            LogoutBtn.Click();
-            var SignInUrl = driver.Url;
-            Assert.AreNotEqual(AdmintUrl,SignInUrl);
-        }
-
-        [Test]
         public void TenantsPage_OpenPage()
         {
             var TenantsBtn = driver.FindElement
                 (By.XPath("//*[@id=\"m_ver_menu\"]/ul/li[1]/a/span/span"));
             TenantsBtn.Click();
+        }
+
+        [Test]
+        public void TenantsPage_TopBarUserNameTest()
+        {
+            // for go to tenants page
+            TenantsPage_OpenPage();
+
+            var username = driver.FindElement(By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
+            Assert.IsTrue(username.Enabled);
+            Assert.IsTrue(username.Displayed);
+            Assert.AreEqual(username.Text, "HI,");
+            Assert.AreEqual(username.GetAttribute("class"), "m-topbar__username");
+
+            var admin = driver.FindElement(By.Id("UserName"));
+            Assert.IsTrue(admin.Enabled);
+            Assert.IsTrue(admin.Displayed);
+            Assert.AreEqual(admin.GetAttribute("style"), "cursor: pointer; margin-bottom: -1.5rem;");
+        }
+
+        [Test]
+        public void TenantsPage_LogoutBtnTest()
+        {
+            // for go to tenants page
+            TenantsPage_OpenPage();
+
+            var username = driver.FindElement
+                (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
+            username.Click();
+
+            var logoutBtn = driver.FindElement
+                (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/div/div/div/div/ul/li[4]/a"));
+            Assert.IsTrue(logoutBtn.Enabled);
+            Assert.IsTrue(logoutBtn.Displayed);
+            Assert.AreEqual(logoutBtn.Text, "Logout");
+
+            var urlBeforeClick = driver.Url;
+            logoutBtn.Click();
+            var urlAfterClick = driver.Url;
+            Assert.AreNotEqual(urlAfterClick, urlBeforeClick);
+            Assert.IsTrue(urlAfterClick.Contains("Login"));
         }
 
         [Test]
@@ -137,11 +127,12 @@ namespace AdminPageTests
             TenantsPage_OpenPage();
 
             var subTitle = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
+            (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1"));
 
             Assert.IsTrue(subTitle.Enabled);
             Assert.IsTrue(subTitle.Displayed);
             Assert.AreEqual(subTitle.Text, "Tenants");
+            Assert.AreEqual(subTitle.GetAttribute("class"), "m-subheader__title m-subheader__title--separator");
         }
 
         [Test]
@@ -150,31 +141,31 @@ namespace AdminPageTests
             // for go to tenants page
             TenantsPage_OpenPage();
 
-            var dashbaordBtn = driver.FindElement(
-                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
-            Assert.True(dashbaordBtn.Enabled);
-            Assert.True(dashbaordBtn.Displayed);
-            Assert.AreEqual(dashbaordBtn.Text, "Dashboard");
-            Assert.AreEqual(dashbaordBtn.GetAttribute("class"), "m-nav__link-text");
+            var dashboardNavLink = driver.FindElement(
+                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a"));
+            Assert.True(dashboardNavLink.Enabled);
+            Assert.True(dashboardNavLink.Displayed);
+            Assert.AreEqual(dashboardNavLink.Text, "Dashboard");
+            Assert.AreEqual(dashboardNavLink.GetAttribute("class"), "m-nav__link");
 
             var urlBeforeClick = driver.Url;
-            dashbaordBtn.Click();
+            dashboardNavLink.Click();
             var UrlAfterClick = driver.Url;
             Assert.AreNotEqual(UrlAfterClick, urlBeforeClick);
         }
 
         [Test]
-        public void TenantsPage_AssetClassNavigationLinkTest()
+        public void TenantsPage_TenantsNavigationLinkTest()
         {
             // for go to tenants page
             TenantsPage_OpenPage();
 
-            var tenants = driver.FindElement(
+            var tenantsNavLink = driver.FindElement(
                 By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[3]/span"));
-            Assert.True(tenants.Enabled);
-            Assert.True(tenants.Displayed);
-            Assert.AreEqual(tenants.Text, "Tenants");
-            Assert.AreEqual(tenants.GetAttribute("class"), "m-nav__link-text");
+            Assert.True(tenantsNavLink.Enabled);
+            Assert.True(tenantsNavLink.Displayed);
+            Assert.AreEqual(tenantsNavLink.Text, "Tenants");
+            Assert.AreEqual(tenantsNavLink.GetAttribute("class"), "m-nav__link-text");
         }
 
         [Test]
@@ -188,6 +179,7 @@ namespace AdminPageTests
 
             Assert.IsTrue(seperator.Enabled);
             Assert.IsTrue(seperator.Displayed);
+            Assert.AreEqual(seperator.Text, ">");
             Assert.AreEqual(seperator.GetAttribute("class"), "m-nav__separator");
         }
 
@@ -199,14 +191,16 @@ namespace AdminPageTests
 
             var showLabel = driver.FindElement
                 (By.XPath("//*[@id=\"TenantTable_length\"]/label"));
-            Assert.True(showLabel.Text.Contains("Show"));
             Assert.True(showLabel.Enabled);
             Assert.True(showLabel.Displayed);
+            Assert.True(showLabel.Text.Contains("Show"));
             showLabel.Click();
 
             var showValue = driver.FindElement(By.Name("TenantTable_length"));
             Assert.True(showValue.Enabled);
             Assert.True(showValue.Displayed);
+            Assert.AreEqual(showValue.GetAttribute("aria-controls"), "TenantTable");
+
             var selectedValue = new SelectElement(showValue);
             selectedValue.SelectByIndex(1);
         }
@@ -220,15 +214,17 @@ namespace AdminPageTests
             var searchLabel = driver.FindElement
                (By.XPath("//*[@id=\"TenantTable_filter\"]/label"));
             searchLabel.Click();
-            Assert.True(searchLabel.Enabled);
-            Assert.AreEqual(searchLabel.Text, "Search:");
+            Assert.IsTrue(searchLabel.Enabled);
             Assert.IsTrue(searchLabel.Displayed);
+            Assert.AreEqual(searchLabel.Text, "Search:");
 
             var searchInput = driver.FindElement
                 (By.XPath("//*[@id=\"TenantTable_filter\"]/label/input"));
             searchInput.SendKeys("Code");
             Assert.True(searchLabel.Enabled);
             Assert.IsTrue(searchInput.Displayed);
+            Assert.AreEqual(searchInput.GetAttribute("type"), "search");
+            Assert.AreEqual(searchInput.GetAttribute("aria-controls"), "TenantTable");
         }
 
         [Test]
@@ -238,95 +234,103 @@ namespace AdminPageTests
             TenantsPage_OpenPage();
 
             var createBtn = driver.FindElement(By.Id("btnCreate"));
-            Assert.AreEqual(createBtn.Text, "Create");
             Assert.True(createBtn.Enabled);
             Assert.True(createBtn.Displayed);
-        }
-
-
-        [Test]
-        public void TenantsPage_WhenClickOnCreateBtn_MustOpenCreateForm()
-        {
-            // for go to tenants page
-            TenantsPage_OpenPage();
-            var createBtn = driver.FindElement(By.Id("btnCreate"));
-            createBtn.Click();
+            Assert.AreEqual(createBtn.Text, "Create");
+            Assert.AreEqual(createBtn.GetAttribute("class"), "btn btn-success btn-primary blue m-btn--wide m-btn--air");
         }
 
         [Test]
         public void TenantsPage_CreateFormTest()
         {
-            // for open create form
-            TenantsPage_WhenClickOnCreateBtn_MustOpenCreateForm();
 
-            var tenencyNameLabel = driver.FindElement
-               (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[1]/div/label"));
-            Assert.True(tenencyNameLabel.Enabled);
-            tenencyNameLabel.Click();
+            // to open tenants page 
+            TenantsPage_OpenPage();
 
-            var tenencyNameInput = driver.FindElement(By.Name("TenancyName"));
-            tenencyNameInput.SendKeys("tenency Name Test");
-            Assert.AreEqual(tenencyNameInput.GetAttribute("Required"), "true");
-            Assert.True(tenencyNameInput.Enabled);
-            Assert.True(tenencyNameInput.Displayed);
+            var createBtn = driver.FindElement(By.Id("btnCreate"));
+            createBtn.Click();
+
+            var TenancyNameLabel = driver.FindElement
+             (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[1]/div/label"));
+            Assert.True(TenancyNameLabel.Enabled);
+            Assert.IsTrue(TenancyNameLabel.Displayed);
+            Assert.AreEqual(TenancyNameLabel.Text, "Tenancy name");
+            Assert.AreEqual(TenancyNameLabel.GetAttribute("class"), "form-label");
+            TenancyNameLabel.Click();
+
+            var TenancyNameInput = driver.FindElement(By.Name("TenancyName"));
+            Assert.True(TenancyNameInput.Enabled);
+            Assert.True(TenancyNameInput.Displayed);
+            Assert.AreEqual(TenancyNameInput.GetAttribute("minlength"), "2");
+            Assert.AreEqual(TenancyNameInput.GetAttribute("maxlength"), "64");
+            Assert.AreEqual(TenancyNameInput.GetAttribute("required"), "true");
+            Assert.AreEqual(TenancyNameInput.GetAttribute("class"), "form-control");
+            TenancyNameInput.SendKeys("tenency Name Test");
 
             var NameLabel = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[2]/div/label"));
-            Assert.True(NameLabel.Displayed);
             Assert.True(NameLabel.Enabled);
+            Assert.True(NameLabel.Displayed);
             Assert.AreEqual(NameLabel.Text, "Name");
+            Assert.AreEqual(NameLabel.GetAttribute("class"), "form-label");
             NameLabel.Click();
 
-            var nameInput = driver.FindElement(By.Name("Name"));
-            nameInput.SendKeys("Name Test");
-            Assert.AreEqual(nameInput.GetAttribute("Required"), "true");
-            Assert.True(nameInput.Enabled);
-            Assert.True(nameInput.Displayed);
+            var NameInput = driver.FindElement(By.Name("Name"));
+            Assert.True(NameInput.Enabled);
+            Assert.True(NameInput.Displayed);
+            Assert.AreEqual(NameInput.GetAttribute("type"), "text");
+            Assert.AreEqual(NameInput.GetAttribute("maxlength"), "128");
+            Assert.AreEqual(NameInput.GetAttribute("required"), "true");
+            NameInput.SendKeys("Name Test");
+
+            var TierDropsownlistLabel = driver.FindElement(By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[3]/div/label"));
+            Assert.IsTrue(TierDropsownlistLabel.Enabled);
+            Assert.IsTrue(TierDropsownlistLabel.Displayed);
+            Assert.AreEqual(TierDropsownlistLabel.Text, "Tier");
+            Assert.AreEqual(TierDropsownlistLabel.GetAttribute("class"), "form-label");
 
             var Tier = driver.FindElement(By.Name("Tier"));
+            Assert.IsTrue(Tier.Enabled);
+            Assert.IsTrue(Tier.Displayed);
+            Assert.AreEqual(Tier.GetAttribute("required"), "true");
+            Assert.AreEqual(Tier.GetAttribute("class"), "form-control tier");
+
             var selectedTier = new SelectElement(Tier);
             selectedTier.SelectByIndex(0);
-            Assert.AreEqual(Tier.GetAttribute("Required"), "true");
 
-            var isActiveLabel = driver.FindElement
-               (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[4]/div/label"));
-            Assert.True(isActiveLabel.Displayed);
-            Assert.True(isActiveLabel.Enabled);
-            Assert.AreEqual(isActiveLabel.Text, "Is Active");
-            isActiveLabel.Click();
+            var IsActiveLabel = driver.FindElement(By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[4]/div/label"));
+            Assert.IsTrue(IsActiveLabel.Enabled);
+            Assert.IsTrue(IsActiveLabel.Displayed);
+            Assert.AreEqual(IsActiveLabel.Text, "Is Active");
+            Assert.AreEqual(IsActiveLabel.GetAttribute("for"), "isactive");
+            Assert.AreEqual(IsActiveLabel.GetAttribute("class"), "form-label");
 
-            var isActiveInput = driver.FindElement(By.Id("isactive"));
-            Assert.AreEqual(isActiveLabel.GetAttribute("for"), isActiveInput.GetAttribute("id"));
-            isActiveInput.Click();
-
-            var adminEmailAddress = driver.FindElement
-                (By.Name("AdminEmailAddress"));
-            Assert.True(adminEmailAddress.Enabled);
-            adminEmailAddress.SendKeys("Test Admin Email Address");
-
-            var defualtPasswordMessage = driver.FindElement(By.XPath("//*[@id=\"OrgCreateModal\"]/form/p"));
-            Assert.AreEqual(defualtPasswordMessage.Text, "Default password is 123qwe");
+            var IsActiveInput = driver.FindElement(By.Id("isactive"));
+            IsActiveInput.Click();
+            Assert.IsTrue(IsActiveInput.Enabled);
+            Assert.IsTrue(IsActiveInput.Displayed);
+            Assert.AreEqual(IsActiveInput.GetAttribute("type"), "checkbox");
 
             var saveBtn = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[5]/button[1]"));
-            var saveBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(saveBtn.Text, "Save");
             Assert.True(saveBtn.Enabled);
             Assert.True(saveBtn.Displayed);
+            Assert.AreEqual(saveBtn.Text, "Save");
+            Assert.AreEqual(saveBtn.GetAttribute("type"), "submit");
+            Assert.AreEqual(saveBtn.GetAttribute("class"), "btn btn-primary waves-effect");
 
             var cancelBtn = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[5]/button[2]"));
-            var cancelBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
-
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("type"), "button");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "btn btn-default waves-effect");
         }
 
+        // this methode test all features for each cloumn in table 
         [Test]
-        public void TenantsPageTest_ReOrderTableTest()
+        public void TenantsPageTest_TenantsTableTest()
         {
             // to open tenancy page
             TenantsPage_OpenPage();
@@ -378,7 +382,26 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void TenentsPage_EditIconTest()
+        public void TenantsPage_EditIconTest()
+        {
+            // to open tenancy page
+            TenantsPage_OpenPage();
+            var editIcon = driver.FindElement
+                (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[5]/td[6]/a[1]"));
+            Assert.True(editIcon.Enabled);
+            Assert.True(editIcon.Displayed);
+            Assert.AreEqual(editIcon.GetAttribute("title"), "Edit");
+            Assert.IsTrue(editIcon.GetAttribute("onclick").Contains("createOrEditModal"));
+
+            var Icon = driver.FindElement(By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[6]/a[1]/i"));
+            Assert.IsTrue(Icon.Enabled);
+            Assert.IsTrue(Icon.Displayed);
+            Assert.AreEqual(Icon.GetAttribute("class"), "fa fa-edit");
+            Assert.AreEqual(Icon.GetAttribute("style"), "cursor: pointer;");
+        }
+
+        [Test]
+        public void TenentsPage_EditIconFormTest()
         {
             // to open tenancy page
             TenantsPage_OpenPage();
@@ -386,57 +409,104 @@ namespace AdminPageTests
             var editIcon = driver.FindElement
                 (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[5]/td[6]/a[1]"));
             editIcon.Click();
-            Assert.True(editIcon.Enabled);
-            Assert.True(editIcon.Displayed);
-            Assert.AreEqual(editIcon.GetAttribute("title"), "Edit");
 
-            var tenencyNameLabel = driver.FindElement
+            var TenancyNameLabel = driver.FindElement
              (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[1]/div/label"));
-            Assert.True(tenencyNameLabel.Enabled);
-            tenencyNameLabel.Click();
+            Assert.True(TenancyNameLabel.Enabled);
+            Assert.IsTrue(TenancyNameLabel.Displayed);
+            Assert.AreEqual(TenancyNameLabel.Text, "Tenancy name");
+            Assert.AreEqual(TenancyNameLabel.GetAttribute("class"),"form-label");
+            TenancyNameLabel.Click();
 
-            var tenencyNameInput = driver.FindElement(By.Name("TenancyName"));
-            tenencyNameInput.SendKeys("tenency Name Test");
-            Assert.AreEqual(tenencyNameInput.GetAttribute("Required"), "true");
-            Assert.True(tenencyNameInput.Enabled);
-            Assert.True(tenencyNameInput.Displayed);
+            var TenancyNameInput = driver.FindElement(By.Name("TenancyName"));
+            Assert.True(TenancyNameInput.Enabled);
+            Assert.True(TenancyNameInput.Displayed);
+            Assert.AreEqual(TenancyNameInput.GetAttribute("minlength"), "2");
+            Assert.AreEqual(TenancyNameInput.GetAttribute("maxlength"), "64");
+            Assert.AreEqual(TenancyNameInput.GetAttribute("required"), "true");
+            Assert.AreEqual(TenancyNameInput.GetAttribute("class"), "form-control");
+            TenancyNameInput.SendKeys("tenency Name Test");
 
             var NameLabel = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[2]/div/label"));
-            Assert.True(NameLabel.Displayed);
             Assert.True(NameLabel.Enabled);
+            Assert.True(NameLabel.Displayed);
             Assert.AreEqual(NameLabel.Text, "Name");
+            Assert.AreEqual(NameLabel.GetAttribute("class"),"form-label");
             NameLabel.Click();
 
-            var nameInput = driver.FindElement(By.Name("Name"));
-            nameInput.SendKeys("Name Test");
-            Assert.AreEqual(nameInput.GetAttribute("Required"), "true");
-            Assert.True(nameInput.Enabled);
-            Assert.True(nameInput.Displayed);
+            var NameInput = driver.FindElement(By.Name("Name"));
+            Assert.True(NameInput.Enabled);
+            Assert.True(NameInput.Displayed);
+            Assert.AreEqual(NameInput.GetAttribute("type"), "text");
+            Assert.AreEqual(NameInput.GetAttribute("maxlength"),"128");
+            Assert.AreEqual(NameInput.GetAttribute("required"), "true");
+            NameInput.SendKeys("Name Test");
+
+            var TierDropsownlistLabel = driver.FindElement(By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[3]/div/label"));
+            Assert.IsTrue(TierDropsownlistLabel.Enabled);
+            Assert.IsTrue(TierDropsownlistLabel.Displayed);
+            Assert.AreEqual(TierDropsownlistLabel.Text,"Tier");
+            Assert.AreEqual(TierDropsownlistLabel.GetAttribute("class"), "form-label");
 
             var Tier = driver.FindElement(By.Name("Tier"));
+            Assert.IsTrue(Tier.Enabled);
+            Assert.IsTrue(Tier.Displayed);
+            Assert.AreEqual(Tier.GetAttribute("required"), "true");
+            Assert.AreEqual(Tier.GetAttribute("class"), "form-control tier");
+
             var selectedTier = new SelectElement(Tier);
             selectedTier.SelectByIndex(0);
-            Assert.AreEqual(Tier.GetAttribute("Required"), "true");
 
-            var isActiveInput = driver.FindElement(By.Id("isactive"));
-            isActiveInput.Click();
+            var IsActiveLabel = driver.FindElement(By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[4]/div/label"));
+            Assert.IsTrue(IsActiveLabel.Enabled);
+            Assert.IsTrue(IsActiveLabel.Displayed);
+            Assert.AreEqual(IsActiveLabel.Text, "Is Active");
+            Assert.AreEqual(IsActiveLabel.GetAttribute("for"), "isactive");
+            Assert.AreEqual(IsActiveLabel.GetAttribute("class"), "form-label");
+
+            var IsActiveInput = driver.FindElement(By.Id("isactive"));
+            IsActiveInput.Click();
+            Assert.IsTrue(IsActiveInput.Enabled);
+            Assert.IsTrue(IsActiveInput.Displayed);
+            Assert.AreEqual(IsActiveInput.GetAttribute("type"), "checkbox");
 
             var saveBtn = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[5]/button[1]"));
-            var saveBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(saveBtn.Text, "Save");
             Assert.True(saveBtn.Enabled);
             Assert.True(saveBtn.Displayed);
+            Assert.AreEqual(saveBtn.Text, "Save");
+            Assert.AreEqual(saveBtn.GetAttribute("type"),"submit");
+            Assert.AreEqual(saveBtn.GetAttribute("class"), "btn btn-primary waves-effect");
 
             var cancelBtn = driver.FindElement
                 (By.XPath("//*[@id=\"OrgCreateModal\"]/form/div[5]/button[2]"));
-            var cancelBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("type"), "button");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "btn btn-default waves-effect");
+        }
+
+        [Test]
+        public void TenantsPage_DeleteIconTest()
+        {
+            // to open tenancy page
+            TenantsPage_OpenPage();
+
+            var deleteIcon = driver.FindElement
+                (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[6]/a[2]"));
+            Assert.True(deleteIcon.Enabled);
+            Assert.True(deleteIcon.Displayed);
+            Assert.AreEqual("Delete", deleteIcon.GetAttribute("title"));
+            Assert.IsTrue(deleteIcon.GetAttribute("onclick").Contains("deleteTenant"));
+
+            var Icon = driver.FindElement
+                (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[6]/a[2]/i"));
+            Assert.IsTrue(Icon.Enabled);
+            Assert.IsTrue(Icon.Displayed);
+            Assert.AreEqual(Icon.GetAttribute("class"), "fa fa-trash");
+            Assert.AreEqual(Icon.GetAttribute("style"), "cursor: pointer;");
         }
 
         [Test]
@@ -448,32 +518,38 @@ namespace AdminPageTests
             var deleteIcon = driver.FindElement
                 (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[6]/a[2]"));
             deleteIcon.Click();
-            Assert.AreEqual("Delete", deleteIcon.GetAttribute("title"));
-            Assert.True(deleteIcon.Enabled);
-            Assert.True(deleteIcon.Displayed);
 
-            var confirmWindo = driver.FindElement(By.XPath("/html/body/div[4]/div/div[1]"));
-            Assert.True(confirmWindo.Enabled);
+            /////// swal modal is warning modal  ////////
+            var swalModal = driver.FindElement(By.XPath("/html/body/div[4]/div"));
+            Assert.IsTrue(swalModal.Enabled);
+            Assert.IsTrue(swalModal.Displayed);
+            Assert.AreEqual(swalModal.GetAttribute("role"), "dialog");
+            Assert.AreEqual(swalModal.GetAttribute("class"), "swal-modal");
 
-            var warninigMessage = driver.FindElement
-                (By.XPath("/html/body/div[4]/div/div[2]"));
-            Assert.AreEqual(warninigMessage.Text, "Are you sure?");
+            var swalTitle = driver.FindElement(By.XPath("/html/body/div[4]/div/div[2]"));
+            Assert.IsTrue(swalTitle.Enabled);
+            Assert.IsTrue(swalTitle.Displayed);
+            Assert.AreEqual(swalTitle.Text, "Are you sure?");
+            Assert.AreEqual(swalTitle.GetAttribute("class"), "swal-title");
 
-            string deleteMessage = "If you delete the tenant,user of this teant will be deleted";
-            var deleteMessageText = driver.FindElement(By.XPath("/html/body/div[4]/div/div[3]"));
-            Assert.AreEqual(deleteMessage,deleteMessageText.Text);
+            var swalIcon = driver.FindElement(By.XPath("/html/body/div[4]/div/div[1]"));
+            Assert.IsTrue(swalIcon.Enabled);
+            Assert.IsTrue(swalIcon.Displayed);
+            Assert.AreEqual(swalIcon.GetAttribute("class"), "swal-icon swal-icon--warning");
 
             var yesBtn = driver.FindElement
                 (By.XPath("/html/body/div[4]/div/div[4]/div[2]/button"));
-            Assert.AreEqual(yesBtn.Text, "Yes");
             Assert.True(yesBtn.Enabled);
             Assert.True(yesBtn.Displayed);
+            Assert.AreEqual(yesBtn.Text, "Yes");
+            Assert.AreEqual(yesBtn.GetAttribute("class"), "swal-button swal-button--confirm");
 
-            var cancelBtn = driver.FindElement(
-                By.XPath("/html/body/div[4]/div/div[4]/div[1]/button"));
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            var cancelBtn = driver.FindElement
+                (By.XPath("/html/body/div[4]/div/div[4]/div[1]/button"));
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "swal-button swal-button--cancel");
         }
 
         [Test]
@@ -483,53 +559,172 @@ namespace AdminPageTests
             TenantsPage_OpenPage();
 
             var loginUserIcon = driver.FindElement
-                (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[1]/a"));
-            Assert.True(loginUserIcon.Displayed);
-            Assert.True(loginUserIcon.Enabled);
-            loginUserIcon.Click();
+               (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[1]/a"));
+            Assert.IsTrue(loginUserIcon.Enabled);
+            Assert.IsTrue(loginUserIcon.Displayed);
+            Assert.AreEqual(loginUserIcon.GetAttribute("title"),"User Login");
+            Assert.IsTrue(loginUserIcon.GetAttribute("onclick").Contains("lookupModal"));
 
-            var title = loginUserIcon.GetAttribute("title");
-            Assert.AreEqual(title, "User Login");
+            var Icon = driver.FindElement
+                (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[1]/a/i"));
+            Assert.IsTrue(Icon.Enabled);
+            Assert.IsTrue(Icon.Displayed);
+            Assert.AreEqual(Icon.GetAttribute("class"), "fa fa-cog");
+            Assert.AreEqual(Icon.GetAttribute("style"), "cursor: pointer;");
+        }
 
-            var UserLoginHeader = driver.FindElement(By.XPath("//*[@id=\"UserModal\"]/div/div/div[1]/h4"));
-            var userLoginHeader = "Select a user";
-            Assert.AreEqual(UserLoginHeader.Text, userLoginHeader);
 
-            var searchLabel = driver.FindElement(By.XPath("//*[@id=\"UserTable_filter\"]/label"));
+        // this method contains code for test user login model 
+        // all features in user login form or page are tested in this code 
+        [Test]
+        public void TenantsPage_UserLoginIconFormTest()
+        {
+            // to open tenancy page
+            TenantsPage_OpenPage();
+
+            var LoginUserIcon = driver.FindElement
+               (By.XPath("//*[@id=\"TenantTable\"]/tbody/tr[1]/td[1]/a"));
+            LoginUserIcon.Click();
+
+            var modalTitle = driver.FindElement
+                (By.XPath("//*[@id=\"UserModal\"]/div/div/div[1]"));
+            Assert.IsTrue(modalTitle.Enabled);
+            Assert.IsTrue(modalTitle.Displayed);
+            Assert.AreEqual(modalTitle.Text, "Select a user");
+            Assert.AreEqual(modalTitle.GetAttribute("class"), "modal-header");
+
+
+            //// data table length test
+            var showLabel = driver.FindElement
+                (By.XPath("//*[@id=\"UserTable_length\"]/label"));
+            Assert.True(showLabel.Text.Contains("Show"));
+            Assert.True(showLabel.Enabled);
+            Assert.True(showLabel.Displayed);
+            showLabel.Click();
+
+            var showValue = driver.FindElement(By.Name("UserTable_length"));
+            Assert.True(showValue.Enabled);
+            Assert.True(showValue.Displayed);
+            var selectedValue = new SelectElement(showValue);
+            selectedValue.SelectByIndex(1);
+
+
+            /////// data tabel filter ///////////
+            var searchLabel = driver.FindElement
+               (By.XPath("//*[@id=\"UserTable_filter\"]/label"));
             searchLabel.Click();
             Assert.True(searchLabel.Enabled);
-            Assert.True(searchLabel.Displayed);
-
-            var searchInput = driver.FindElement(By.XPath("//*[@id=\"UserTable_filter\"]/label/input"));
-            searchInput.SendKeys("TestSearch");
-            Assert.True(searchInput.Enabled);
-            Assert.True(searchInput.Displayed);
-
+            Assert.IsTrue(searchLabel.Displayed);
             Assert.AreEqual(searchLabel.Text, "Search:");
 
-            var showDropdownlist = driver.FindElement(By.XPath("//*[@id=\"UserTable_length\"]/label"));
-            Assert.True(showDropdownlist.Enabled);
-            Assert.True(showDropdownlist.Displayed);
-            showDropdownlist.SendKeys("25");
-            showDropdownlist.Click();
+            var searchInput = driver.FindElement
+                (By.XPath("//*[@id=\"UserTable_filter\"]/label/input"));
+            searchInput.SendKeys("Code");
+            Assert.True(searchLabel.Enabled);
+            Assert.IsTrue(searchInput.Displayed); 
 
+
+            ///// table test /////
+            var Select = driver.FindElement(By.XPath("//*[@id=\"UserTable\"]/thead/tr/th[1]"));
+            Assert.IsTrue(Select.Enabled);
+            Assert.IsTrue(Select.Displayed);
+            Assert.AreEqual(Select.GetAttribute("class"),"sorting_asc");
+            Assert.AreEqual(Select.GetAttribute("aria-controls"), "UserTable");
+            Assert.AreEqual(Select.GetAttribute("aria-label"), "Select: activate to sort column descending");
+
+            var Name = driver.FindElement(By.XPath("//*[@id=\"UserTable\"]/thead/tr/th[2]"));
+            Assert.IsTrue(Name.Enabled);
+            Assert.IsTrue(Name.Displayed);
+            Assert.AreEqual(Name.GetAttribute("class"), "sorting");
+            Assert.AreEqual(Name.GetAttribute("aria-controls"), "UserTable");
+            Assert.AreEqual(Name.GetAttribute("aria-label"), "Name: activate to sort column ascending");
+
+            var Roles = driver.FindElement(By.XPath("//*[@id=\"UserTable\"]/thead/tr/th[3]"));
+            Assert.IsTrue(Roles.Enabled);
+            Assert.IsTrue(Roles.Displayed);
+            Assert.AreEqual(Roles.GetAttribute("class"), "sorting");
+            Assert.AreEqual(Roles.GetAttribute("aria-controls"), "UserTable");
+            Assert.AreEqual(Roles.GetAttribute("aria-label"), "Roles: activate to sort column ascending");
+
+
+            //// paginate test /////
             var PrevisouBtn = driver.FindElement(By.Id("UserTable_previous"));
             Assert.True(PrevisouBtn.Enabled);
             Assert.True(PrevisouBtn.Displayed);
-            PrevisouBtn.Click();
             Assert.AreEqual(PrevisouBtn.Text, "Previous");
-
+            Assert.AreEqual(PrevisouBtn.GetAttribute("class"), "paginate_button previous disabled");
+            Assert.AreEqual(PrevisouBtn.GetAttribute("aria-controls"), "UserTable");
+            PrevisouBtn.Click();
 
             var nextBtn = driver.FindElement(By.Id("UserTable_next"));
             Assert.True(nextBtn.Enabled);
             Assert.True(nextBtn.Displayed);
-            nextBtn.Click();
             Assert.AreEqual(nextBtn.Text, "Next");
+            Assert.AreEqual(nextBtn.GetAttribute("aria-controls"), "UserTable");
+            Assert.AreEqual(nextBtn.GetAttribute("class"), "paginate_button next disabled");
+            nextBtn.Click();
 
-            var XIcon = driver.FindElement(By.Id("closeButton"));
-            Assert.True(XIcon.Enabled);
-            Assert.True(XIcon.Displayed);
-            XIcon.Click();
+            var pages = driver.FindElements(By.Id("UserTable_paginate"));
+            foreach(var page in pages)
+            {
+                Assert.IsTrue(page.Enabled);
+                Assert.IsTrue(page.Displayed);
+                page.Click();
+            }
+
+
+            //// table information Test /////
+            var tableInfo = driver.FindElement(By.Id("TenantTable_info"));
+            Assert.IsTrue(tableInfo.Enabled);
+            Assert.IsTrue(tableInfo.Displayed);
+            Assert.AreEqual(tableInfo.GetAttribute("role"), "status");
+            Assert.IsTrue(tableInfo.Text.Contains("Showing") && tableInfo.Text.Contains("entries"));
+            Assert.AreEqual(tableInfo.GetAttribute("aria-live"), "polite");
+            Assert.AreEqual(tableInfo.GetAttribute("class"), "dataTables_info");
+
+
+            ///// close Icon Test
+            var CloseBtn = driver.FindElement(By.Id("closeButton"));
+            Assert.True(CloseBtn.Enabled);
+            Assert.True(CloseBtn.Displayed);
+            Assert.AreEqual(CloseBtn.GetAttribute("class"),"close");
+            Assert.AreEqual(CloseBtn.GetAttribute("type"),"button");
+
+            var Icon = driver.FindElement(By.XPath("//*[@id=\"closeButton\"]/i"));
+            Assert.IsTrue(Icon.Enabled);
+            Assert.IsTrue(Icon.Displayed);
+            Assert.AreEqual(Icon.GetAttribute("class"), "fa fa-times");
+        }
+
+        [Test]
+        public void TenantsPage_PaginateTest()
+        {
+            // to open Tenants Page 
+            TenantsPage_OpenPage();
+
+            var PrevisouBtn = driver.FindElement(By.Id("TenantTable_previous"));
+            Assert.True(PrevisouBtn.Enabled);
+            Assert.True(PrevisouBtn.Displayed);
+            Assert.AreEqual(PrevisouBtn.Text, "Previous");
+            Assert.AreEqual(PrevisouBtn.GetAttribute("aria-controls"), "TenantTable");
+            Assert.AreEqual(PrevisouBtn.GetAttribute("class"), "paginate_button previous disabled");
+            PrevisouBtn.Click();
+
+            var nextBtn = driver.FindElement(By.Id("TenantTable_next"));
+            Assert.True(nextBtn.Enabled);
+            Assert.True(nextBtn.Displayed);
+            Assert.AreEqual(nextBtn.Text, "Next");
+            Assert.AreEqual(nextBtn.GetAttribute("aria-controls"), "TenantTable");
+            Assert.AreEqual(nextBtn.GetAttribute("class"), "paginate_button next disabled");
+            nextBtn.Click();
+
+            var pages = driver.FindElements(By.Id("TenantTable_paginate"));
+            foreach (var page in pages)
+            {
+                Assert.IsTrue(page.Enabled);
+                Assert.IsTrue(page.Displayed);
+                page.Click();
+            }
         }
 
         [Test]
@@ -560,7 +755,6 @@ namespace AdminPageTests
             Assert.AreEqual(copyRight.Text, ("2025 © CTDOT (Ver .)"));
             Assert.AreEqual(copyRight.GetAttribute("class"), "m-footer__copyright");
         }
-
         [Test]
         public void TenantsPage_MinimizeToggleBtnTest()
         {

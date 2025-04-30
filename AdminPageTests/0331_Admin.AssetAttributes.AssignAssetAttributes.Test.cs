@@ -230,6 +230,7 @@ namespace AdminPageTests
             var admin = driver.FindElement(By.Id("UserName"));
             Assert.IsTrue(admin.Enabled);
             Assert.IsTrue(admin.Displayed);
+            Assert.AreEqual(admin.GetAttribute("style"), "cursor: pointer; margin-bottom: -1.5rem;");
         }
 
         [Test]
@@ -262,11 +263,61 @@ namespace AdminPageTests
             AssignAssetAttributes_OpenPage();
 
             var subTitle = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1"));
 
             Assert.IsTrue(subTitle.Enabled);
             Assert.IsTrue(subTitle.Displayed);
             Assert.AreEqual(subTitle.Text, "Assign Asset Attributes");
+            Assert.AreEqual(subTitle.GetAttribute("class"), "m-subheader__title m-subheader__title--separator");
+        }
+
+        [Test]
+        public void AssignAssetAttributesPage_DashboardNavigationLinkTest()
+        {
+            // to open assign asset attributes page
+            AssignAssetAttributes_OpenPage();
+
+            var dashboardNavLink = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a"));
+            Assert.IsTrue(dashboardNavLink.Enabled);
+            Assert.IsTrue(dashboardNavLink.Displayed);
+            Assert.AreEqual(dashboardNavLink.Text,"Dashboard");
+            Assert.AreEqual(dashboardNavLink.GetAttribute("class"), "m-nav__link");
+
+            var UrlBeforeClick = driver.Url;
+            dashboardNavLink.Click();
+            var UrlAfterClick = driver.Url;
+            Assert.AreNotEqual(UrlBeforeClick, UrlAfterClick);
+        }
+
+        [Test]
+        public void AssignAssetAttributesPage_AssignAssetAttributesNavigationLinkTest()
+        {
+            // to open assign asset attributes page
+            AssignAssetAttributes_OpenPage();
+
+            var assignAssetAttributesNavLink = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[3]/span"));
+
+            Assert.IsTrue(assignAssetAttributesNavLink.Enabled);
+            Assert.IsTrue(assignAssetAttributesNavLink.Displayed);
+            Assert.AreEqual(assignAssetAttributesNavLink.Text,"Assign Asset Attributes");
+            Assert.AreEqual(assignAssetAttributesNavLink.GetDomAttribute("class"), "m-nav__link-text");
+        }
+
+        [Test]
+        public void AssignAssetAttributesPage_SeparatorBetweenNavLinksTest()
+        {
+            // to open assign asset attributes page
+            AssignAssetAttributes_OpenPage();
+
+            var Seperator = driver.FindElement
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[2]"));
+
+            Assert.IsTrue(Seperator.Enabled);
+            Assert.IsTrue(Seperator.Displayed);
+            Assert.AreEqual(Seperator.Text,">");
+            Assert.AreEqual(Seperator.GetAttribute("class"), "m-nav__separator");
         }
 
         [Test]

@@ -174,17 +174,59 @@ namespace AdminPageTests
         }
 
         [Test]
+        public void AssetClassPage_TopBarUserNameTest()
+        {
+            // to open asset class page
+            AssetClassPage_OpenPage();
+
+            var username = driver.FindElement(By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
+            Assert.IsTrue(username.Enabled);
+            Assert.IsTrue(username.Displayed);
+            Assert.AreEqual(username.Text, "HI,");
+            Assert.AreEqual(username.GetAttribute("class"), "m-topbar__username");
+
+            var admin = driver.FindElement(By.Id("UserName"));
+            Assert.IsTrue(admin.Enabled);
+            Assert.IsTrue(admin.Displayed);
+            Assert.AreEqual(admin.GetAttribute("style"), "cursor: pointer; margin-bottom: -1.5rem;");
+        }
+
+        [Test]
+        public void AssetClassPage_LogoutBtnTest()
+        {
+            // to open asset class page
+            AssetClassPage_OpenPage();
+
+            var username = driver.FindElement
+                (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/a/span[1]"));
+            username.Click();
+
+            var logoutBtn = driver.FindElement
+                (By.XPath("//*[@id=\"m_header_topbar\"]/div/ul/li[3]/div/div/div/div/ul/li[4]/a"));
+            Assert.IsTrue(logoutBtn.Enabled);
+            Assert.IsTrue(logoutBtn.Displayed);
+            Assert.AreEqual(logoutBtn.Text, "Logout");
+
+            var urlBeforeClick = driver.Url;
+            logoutBtn.Click();
+            var urlAfterClick = driver.Url;
+            Assert.AreNotEqual(urlAfterClick, urlBeforeClick);
+            Assert.IsTrue(urlAfterClick.Contains("Login"));
+        }
+
+        [Test]
         public void AssetClassPage_SubHeaderTitleTest()
         {
             // to open asset class page
             AssetClassPage_OpenPage();
 
             var subTitle = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1"));
 
             Assert.IsTrue(subTitle.Enabled);
             Assert.IsTrue(subTitle.Displayed);
             Assert.AreEqual(subTitle.Text,"Asset Classes");
+            Assert.AreEqual(subTitle.GetAttribute("class"), "m-subheader__title m-subheader__title--separator");
         }
 
         [Test]
@@ -193,15 +235,15 @@ namespace AdminPageTests
             // to open asset class page
             AssetClassPage_OpenPage();
 
-            var dashbaordBtn = driver.FindElement(
-                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
-            Assert.True(dashbaordBtn.Enabled);
-            Assert.True(dashbaordBtn.Displayed);
-            Assert.AreEqual(dashbaordBtn.Text, "Dashboard");
-            Assert.AreEqual(dashbaordBtn.GetAttribute("class"), "m-nav__link-text");
+            var dashboardNavLink = driver.FindElement(
+                By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a"));
+            Assert.True(dashboardNavLink.Enabled);
+            Assert.True(dashboardNavLink.Displayed);
+            Assert.AreEqual(dashboardNavLink.Text, "Dashboard");
+            Assert.AreEqual(dashboardNavLink.GetAttribute("class"), "m-nav__link");
 
             var urlBeforeClick = driver.Url;
-            dashbaordBtn.Click();
+            dashboardNavLink.Click();
             var UrlAfterClick = driver.Url;
             Assert.AreNotEqual(UrlAfterClick,urlBeforeClick);
         }
@@ -212,12 +254,12 @@ namespace AdminPageTests
             // to open asset class page
             AssetClassPage_OpenPage();
 
-            var assetClasses = driver.FindElement(
+            var assetClassesNavLink = driver.FindElement(
                 By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[3]/span"));
-            Assert.True(assetClasses.Enabled);
-            Assert.True(assetClasses.Displayed);
-            Assert.AreEqual(assetClasses.Text, "Asset Classes");
-            Assert.AreEqual(assetClasses.GetAttribute("class"), "m-nav__link-text");
+            Assert.True(assetClassesNavLink.Enabled);
+            Assert.True(assetClassesNavLink.Displayed);
+            Assert.AreEqual(assetClassesNavLink.Text, "Asset Classes");
+            Assert.AreEqual(assetClassesNavLink.GetAttribute("class"), "m-nav__link-text");
         }
 
         [Test]
@@ -225,11 +267,12 @@ namespace AdminPageTests
         {
             // to open asset class page
             AssetClassPage_OpenPage();
+
             var seperator = driver.FindElement
                 (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[2]"));
-
             Assert.IsTrue(seperator.Enabled);
             Assert.IsTrue(seperator.Displayed);
+            Assert.AreEqual(seperator.Text,">");
             Assert.AreEqual(seperator.GetAttribute("class"), "m-nav__separator");
         }
 
@@ -243,12 +286,16 @@ namespace AdminPageTests
                 (By.XPath("//*[@id=\"AssetClassesTable_filter\"]/label"));
             searchLabel.Click();
             Assert.True(searchLabel.Enabled);
+            Assert.IsTrue(searchLabel.Displayed);
             Assert.AreEqual(searchLabel.Text, "Search:");
 
             var searchInput = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable_filter\"]/label/input"));
             searchInput.SendKeys("Test");
-            Assert.True(searchLabel.Enabled);
+            Assert.IsTrue(searchLabel.Enabled);
+            Assert.IsTrue(searchInput.Displayed);
+            Assert.AreEqual(searchInput.GetAttribute("type"),"search");
+            Assert.AreEqual(searchInput.GetAttribute("aria-controls"), "AssetClassesTable");
         }
 
         [Test]
@@ -259,26 +306,18 @@ namespace AdminPageTests
 
             var showLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable_length\"]/label"));
-            Assert.True(showLabel.Text.Contains("Show"));
+            showLabel.Click();
             Assert.True(showLabel.Enabled);
             Assert.True(showLabel.Displayed);
-            showLabel.Click();
+            Assert.True(showLabel.Text.Contains("Show"));
 
             var showValue = driver.FindElement(By.Name("AssetClassesTable_length"));
             Assert.True(showValue.Enabled);
             Assert.True(showValue.Displayed);
+            Assert.AreEqual(showValue.GetAttribute("aria-controls"), "AssetClassesTable");
+
             var selectedValue = new SelectElement(showValue);
             selectedValue.SelectByIndex(1);
-        }
-
-        [Test]
-        public void AssetClassPage_WhenClickOnCreateBtn_MustOpenCreateForm()
-        {
-            // to open asset class page
-            AssetClassPage_OpenPage();
-
-            var createBtn = driver.FindElement(By.Id("btnCreate"));
-            createBtn.Click();
         }
 
         [Test]
@@ -291,25 +330,36 @@ namespace AdminPageTests
             Assert.True(createBtn.Enabled);
             Assert.True(createBtn.Displayed);
             Assert.AreEqual(createBtn.Text, "Create");
+            Assert.AreEqual(createBtn.GetAttribute("class"), "btn btn-success btn-primary blue m-btn--wide m-btn--air");
         }
 
         [Test]
         public void AssetClassPage_CreateFormTest()
         {
-            // to open create form
-            AssetClassPage_WhenClickOnCreateBtn_MustOpenCreateForm();
+            // to open Asset Class Page
+            AssetClassPage_OpenPage();
 
-            var assetClassLabel = driver.FindElement
+            var createBtn = driver.FindElement(By.Id("btnCreate"));
+            createBtn.Click();
+
+            var assetClassesLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassCreateModal\"]/form/div[1]/div/div/div/label"));
-            assetClassLabel.Click();
-            Assert.True(assetClassLabel.Enabled);
-            Assert.True(assetClassLabel.Displayed);
+            Assert.True(assetClassesLabel.Enabled);
+            Assert.True(assetClassesLabel.Displayed);
+            Assert.AreEqual(assetClassesLabel.Text,"Asset Classes");
+            Assert.AreEqual(assetClassesLabel.GetAttribute("for"),"AssetClass");
+            Assert.AreEqual(assetClassesLabel.GetAttribute("class"),"form-label");
+            assetClassesLabel.Click();
 
             var assetClassInput = driver.FindElement(By.Id("ClassName"));
-            var requiredField = assetClassInput.GetAttribute("required");
-            Assert.AreEqual(requiredField, "true");
             Assert.True(assetClassInput.Enabled);
             Assert.True(assetClassInput.Displayed);
+            Assert.AreEqual(assetClassInput.GetAttribute("type"),"text");
+            Assert.AreEqual(assetClassInput.GetAttribute("required"),"true");
+            Assert.AreEqual(assetClassInput.GetAttribute("maxlength"),"255");
+            Assert.AreEqual(assetClassInput.GetAttribute("data-val-length-max"),"255");
+            Assert.AreEqual(assetClassInput.GetAttribute("class"),"validate form-control");
+            Assert.AreEqual(assetClassInput.GetAttribute("data-val-length"), "The field ClassName must be a string with a maximum length of 255.");
             assetClassInput.SendKeys("Test Name");
 
             var descriptionLabel = driver.FindElement
@@ -318,57 +368,100 @@ namespace AdminPageTests
             Assert.True(descriptionLabel.Enabled);
             Assert.True(descriptionLabel.Displayed);
             Assert.AreEqual(descriptionLabel.Text, "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("for"), "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("class"),"form-label-default ");
 
             var descriptionInput = driver.FindElement(By.XPath("//*[@id=\"Description\"]"));
             Assert.True(descriptionInput.Enabled);
             Assert.True(descriptionInput.Displayed);
+            Assert.AreEqual(descriptionInput.GetAttribute("maxlength"),"255");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length-max"),"255");
+            Assert.AreEqual(descriptionInput.GetAttribute("class"),"validate form-control");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length"), "The field Description must be a string with a maximum length of 255.");
             descriptionInput.SendKeys("Test");
 
             var saveBtn = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassCreateModal\"]/form/div[3]/button[1]"));
-            var saveBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(saveBtn.Text,"Save");
             Assert.True(saveBtn.Enabled);
             Assert.True(saveBtn.Displayed);
+            Assert.AreEqual(saveBtn.Text,"Save");
+            Assert.AreEqual(saveBtn.GetAttribute("type"),"submit");
+            Assert.AreEqual(saveBtn.GetAttribute("class"), "btn btn-primary waves-effect");
 
             var cancelBtn = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassCreateModal\"]/form/div[3]/button[2]"));
-            var cancelBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("type"), "button");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "btn btn-default waves-effect");
         }
 
         [Test]
-        public void AssetClassPage_ReOrderPageTest()
+        public void AssetClassPage_AssetClassesTableTest()
         {
             // to open asset class page
             AssetClassPage_OpenPage();
 
+            var tableColumns = driver.FindElements(By.Id("AssetClassesTable"));
+            foreach(var column in tableColumns)
+            {
+                Assert.IsTrue(column.Enabled);
+                Assert.IsTrue(column.Displayed);
+            }
+
             var assetClasseName = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable\"]/thead/tr/th[1]"));
-            assetClasseName.Click();
             Assert.True(assetClasseName.Enabled);
             Assert.True(assetClasseName.Displayed);
             Assert.AreEqual(assetClasseName.Text, "Asset Class Name");
+            Assert.AreEqual(assetClasseName.GetAttribute("class"), "sorting_asc");
+            Assert.AreEqual(assetClasseName.GetAttribute("aria-sort"), "ascending");
+            Assert.AreEqual(assetClasseName.GetAttribute("aria-controls"), "AssetClassesTable");
+            Assert.AreEqual(assetClasseName.GetAttribute("aria-label"), "Asset Class Name: activate to sort column descending");
+            assetClasseName.Click();
 
             var assetClassDescitption = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable\"]/thead/tr/th[2]"));
-            assetClassDescitption.Click();
             Assert.True(assetClassDescitption.Enabled);
             Assert.True(assetClassDescitption.Displayed);
             Assert.AreEqual(assetClassDescitption.Text, "Asset Class Description");
+            Assert.AreEqual(assetClassDescitption.GetAttribute("class"), "sorting");
+            Assert.AreEqual(assetClassDescitption.GetAttribute("aria-controls"), "AssetClassesTable");
+            Assert.AreEqual(assetClassDescitption.GetAttribute("aria-label"), "Asset Class Description: activate to sort column ascending");
+            assetClassDescitption.Click();
 
-            var action = driver.FindElement
+            var Actions = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable\"]/thead/tr/th[3]"));
-            Assert.AreEqual(action.Text, "Actions");
-            Assert.True(assetClassDescitption.Enabled);
+            Assert.True(Actions.Enabled);
+            Assert.True(Actions.Displayed);
+            Assert.AreEqual(Actions.Text, "Actions");
+            Assert.AreEqual(Actions.GetAttribute("aria-label"), "Actions");
+            Assert.AreEqual(Actions.GetAttribute("class"), "sorting_disabled");
         }
 
         [Test]
-        public void AssetClassPage_EditAssetTest()
+        public void AssetClassPage_EditIconTest()
+        {
+            // to open asset class page
+            AssetClassPage_OpenPage();
+
+            var editIcon = driver.FindElement
+               (By.XPath("//*[@id=\"AssetClassesTable\"]/tbody/tr[1]/td[3]/a[1]"));
+            Assert.True(editIcon.Enabled);
+            Assert.True(editIcon.Displayed);
+            Assert.AreEqual("Edit", editIcon.GetAttribute("title"));
+            Assert.IsTrue(editIcon.GetAttribute("onclick").Contains("editAssetClass"));
+
+            var Icon = driver.FindElement(By.XPath("//*[@id=\"AssetClassesTable\"]/tbody/tr[1]/td[3]/a[1]/i"));
+            Assert.IsTrue(Icon.Enabled);
+            Assert.IsTrue(Icon.Displayed);
+            Assert.AreEqual(Icon.GetAttribute("class"), "fa fa-edit");
+            Assert.AreEqual(Icon.GetAttribute("style"), "cursor: pointer;");
+        }
+
+        [Test]
+        public void AssetClassPage_EditIconFormTest()
         {
             // to open asset class page
             AssetClassPage_OpenPage();
@@ -376,84 +469,124 @@ namespace AdminPageTests
             var editIcon = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable\"]/tbody/tr[1]/td[3]/a[1]"));
             editIcon.Click();
-            Assert.AreEqual("Edit",editIcon.GetAttribute("title"));
-            Assert.True(editIcon.Enabled);
-            Assert.True(editIcon.Displayed);
 
-
-            var assetClassLabel = driver.FindElement
+            var assetClassesLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassCreateModal\"]/form/div[1]/div/div/div/label"));
-            assetClassLabel.Click();
-            Assert.True(assetClassLabel.Enabled);
-            Assert.True(assetClassLabel.Displayed);
+            Assert.IsTrue(assetClassesLabel.Enabled);
+            Assert.IsTrue(assetClassesLabel.Displayed);
+            Assert.AreEqual(assetClassesLabel.Text, "Asset Classes");
+            Assert.AreEqual(assetClassesLabel.GetAttribute("for"), "AssetClass");
+            Assert.AreEqual(assetClassesLabel.GetAttribute("class"), "form-label");
 
             var assetClassInput = driver.FindElement(By.Id("ClassName"));
-            var requiredField = assetClassInput.GetAttribute("required");
-            Assert.AreEqual(requiredField, "true");
-            Assert.True(assetClassInput.Enabled);
-            Assert.True(assetClassInput.Displayed);
+            Assert.IsTrue(assetClassInput.Enabled);
+            Assert.IsTrue(assetClassInput.Displayed);
+            Assert.AreEqual(assetClassInput.GetAttribute("type"), "text");
+            Assert.AreEqual(assetClassInput.GetAttribute("required"), "true");
+            Assert.AreEqual(assetClassInput.GetAttribute("maxlength"), "255");
+            Assert.AreEqual(assetClassInput.GetAttribute("data-val-length-max"), "255");
+            Assert.AreEqual(assetClassInput.GetAttribute("class"), "validate form-control");
+            Assert.AreEqual(assetClassInput.GetAttribute("data-val-length"), "The field ClassName must be a string with a maximum length of 255.");
             assetClassInput.SendKeys("Test Name");
 
             var descriptionLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassCreateModal\"]/form/div[2]/div/div/div/label"));
-            descriptionLabel.Click();
-            Assert.True(descriptionLabel.Enabled);
-            Assert.True(descriptionLabel.Displayed);
+            Assert.IsTrue(descriptionLabel.Enabled);
+            Assert.IsTrue(descriptionLabel.Displayed);
             Assert.AreEqual(descriptionLabel.Text, "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("for"), "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("class"), "form-label-default ");
 
             var descriptionInput = driver.FindElement(By.XPath("//*[@id=\"Description\"]"));
-            Assert.True(descriptionInput.Enabled);
-            Assert.True(descriptionInput.Displayed);
+            Assert.IsTrue(descriptionInput.Enabled);
+            Assert.IsTrue(descriptionInput.Displayed);
+        
+            Assert.AreEqual(descriptionInput.GetAttribute("maxlength"), "255");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length-max"), "255");
+            Assert.AreEqual(descriptionInput.GetAttribute("class"), "validate form-control");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length"), "The field Description must be a string with a maximum length of 255.");
             descriptionInput.SendKeys("Test");
 
             var saveBtn = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassCreateModal\"]/form/div[3]/button[1]"));
-            var saveBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
+            Assert.IsTrue(saveBtn.Enabled);
+            Assert.IsTrue(saveBtn.Displayed);
             Assert.AreEqual(saveBtn.Text, "Save");
-            Assert.True(saveBtn.Enabled);
-            Assert.True(saveBtn.Displayed);
+            Assert.AreEqual(saveBtn.GetAttribute("type"), "submit");
+            Assert.AreEqual(saveBtn.GetAttribute("class"), "btn btn-primary waves-effect");
 
             var cancelBtn = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassCreateModal\"]/form/div[3]/button[2]"));
-            var cancelBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
+            Assert.IsTrue(cancelBtn.Enabled);
+            Assert.IsTrue(cancelBtn.Displayed);
             Assert.AreEqual(cancelBtn.Text, "Cancel");
-            Assert.True(cancelBtn.Enabled);
-            Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.GetAttribute("type"), "button");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "btn btn-default waves-effect");
         }
 
         [Test]
-        public void AssetClassPage_DeleteAssetTest()
+        public void AssetClassPage_DeleteIconTest()
         {
             // to open asset class page
             AssetClassPage_OpenPage();
 
             var deleteIcon = driver.FindElement
                 (By.XPath("//*[@id=\"AssetClassesTable\"]/tbody/tr[1]/td[3]/a[2]"));
-            Assert.AreEqual(deleteIcon.GetAttribute("title"),"Delete");
+            deleteIcon.Click();
             Assert.True(deleteIcon.Enabled);
             Assert.True(deleteIcon.Displayed);
+            Assert.AreEqual(deleteIcon.GetAttribute("title"), "Delete");
+            Assert.IsTrue(deleteIcon.GetAttribute("onclick").Contains("deleteAssetClass"));
+
+            var Icon = driver.FindElement
+                (By.XPath("//*[@id=\"AssetClassesTable\"]/tbody/tr[1]/td[3]/a[2]/i"));
+            Assert.IsTrue(Icon.Enabled);
+            Assert.IsTrue(Icon.Displayed);
+            Assert.AreEqual(Icon.GetAttribute("class"), "fa fa-trash");
+            Assert.AreEqual(Icon.GetAttribute("style"), "cursor: pointer;");
+        }
+
+        [Test]
+        public void AssetClassPage_DeleteIconFormTest()
+        {
+            // to open asset class page
+            AssetClassPage_OpenPage();
+
+            var deleteIcon = driver.FindElement
+                (By.XPath("//*[@id=\"AssetClassesTable\"]/tbody/tr[1]/td[3]/a[2]"));
             deleteIcon.Click();
 
-            var confirmWindo = driver.FindElement(By.XPath("/html/body/div[4]/div"));
-            Assert.True(confirmWindo.Displayed);
+            /////// swal modal is warning modal  ////////
+            var swalModal = driver.FindElement(By.XPath("/html/body/div[4]/div"));
+            Assert.IsTrue(swalModal.Enabled);
+            Assert.IsTrue(swalModal.Displayed);
+            Assert.AreEqual(swalModal.GetAttribute("role"), "dialog");
+            Assert.AreEqual(swalModal.GetAttribute("class"), "swal-modal");
 
-            var warninigMessage = driver.FindElement
-                (By.XPath("/html/body/div[4]/div/div[2]"));
-            Assert.AreEqual(warninigMessage.Text, "Are you sure?");
+            var swalTitle = driver.FindElement(By.XPath("/html/body/div[4]/div/div[2]"));
+            Assert.IsTrue(swalTitle.Enabled);
+            Assert.IsTrue(swalTitle.Displayed);
+            Assert.AreEqual(swalTitle.Text, "Are you sure?");
+            Assert.AreEqual(swalTitle.GetAttribute("class"), "swal-title");
+
+            var swalIcon = driver.FindElement(By.XPath("/html/body/div[4]/div/div[1]"));
+            Assert.IsTrue(swalIcon.Enabled);
+            Assert.IsTrue(swalIcon.Displayed);
+            Assert.AreEqual(swalIcon.GetAttribute("class"), "swal-icon swal-icon--warning");
 
             var yesBtn = driver.FindElement
                 (By.XPath("/html/body/div[4]/div/div[3]/div[2]/button"));
-            Assert.AreEqual(yesBtn.Text, "Yes");
             Assert.True(yesBtn.Enabled);
             Assert.True(yesBtn.Displayed);
+            Assert.AreEqual(yesBtn.Text, "Yes");
+            Assert.AreEqual(yesBtn.GetAttribute("class"), "swal-button swal-button--confirm");
 
-            var cancelBtn = driver.FindElement(
-                By.XPath("/html/body/div[4]/div/div[3]/div[1]/button"));
-            Assert.AreEqual(cancelBtn.Text,"Cancel");
+            var cancelBtn = driver.FindElement
+                (By.XPath("/html/body/div[4]/div/div[3]/div[1]/button"));
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "swal-button swal-button--cancel");
         }
 
         [Test]
@@ -463,16 +596,28 @@ namespace AdminPageTests
             AssetClassPage_OpenPage();
 
             var nextBtn = driver.FindElement(By.Id("AssetClassesTable_next"));
-            Assert.AreEqual(nextBtn.Text,"Next");
             Assert.True(nextBtn.Enabled);
             Assert.True(nextBtn.Displayed);
+            Assert.AreEqual(nextBtn.Text,"Next");
+            Assert.AreEqual(nextBtn.GetAttribute("aria-controls"),"AssetClassesTable");
+            Assert.AreEqual(nextBtn.GetAttribute("class"), "paginate_button next disabled");
             nextBtn.Click();
 
             var previoustBtn = driver.FindElement(By.Id("AssetClassesTable_previous"));
-            Assert.AreEqual(previoustBtn.Text,"Previous");
             Assert.True(previoustBtn.Enabled);
             Assert.True(previoustBtn.Displayed);
+            Assert.AreEqual(previoustBtn.Text,"Previous");
+            Assert.AreEqual(previoustBtn.GetAttribute("aria-controls"),"AssetClassesTable");
+            Assert.AreEqual(previoustBtn.GetAttribute("class"), "paginate_button previous disabled");
             previoustBtn.Click();
+
+            var pages = driver.FindElements(By.Id("AssetClassesTable_paginate"));
+            foreach(var page in pages)
+            {
+                Assert.IsTrue(page.Enabled);
+                Assert.IsTrue(page.Displayed);
+                page.Click();
+            }
         }
 
         [Test]

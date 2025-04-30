@@ -11,7 +11,7 @@ namespace AdminPageTests
 
         public void Dispose()
         {
-            driver.Dispose();
+           driver.Dispose();
         }
 
         [TearDown]
@@ -19,7 +19,7 @@ namespace AdminPageTests
         {
             if (driver != null)
             {
-                driver.Quit();
+               driver.Quit();
             }
         }
 
@@ -230,6 +230,7 @@ namespace AdminPageTests
             var admin = driver.FindElement(By.Id("UserName"));
             Assert.IsTrue(admin.Enabled);
             Assert.IsTrue(admin.Displayed);
+            Assert.AreEqual(admin.GetAttribute("style"), "cursor: pointer; margin-bottom: -1.5rem;");
         }
 
         [Test]
@@ -262,11 +263,12 @@ namespace AdminPageTests
             CreateAssetAttributes_OpenPage();
 
             var subTitle = driver.FindElement
-                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1/span"));
+                (By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/h1"));
 
             Assert.IsTrue(subTitle.Enabled);
             Assert.IsTrue(subTitle.Displayed);
             Assert.AreEqual(subTitle.Text, "Asset Attribute");
+            Assert.AreEqual(subTitle.GetAttribute("class"), "m-subheader__title m-subheader__title--separator");
         }
 
         [Test]
@@ -275,15 +277,15 @@ namespace AdminPageTests
             // to open create asset attributes page
             CreateAssetAttributes_OpenPage();
 
-            var dashbaordBtn = driver.FindElement(
+            var dashbaordNavLink = driver.FindElement(
                 By.XPath("/html/body/div[1]/div/div[2]/div[1]/div/div/ul/li[1]/a/span"));
-            Assert.True(dashbaordBtn.Enabled);
-            Assert.True(dashbaordBtn.Displayed);
-            Assert.AreEqual(dashbaordBtn.Text, "Dashboard");
-            Assert.AreEqual(dashbaordBtn.GetAttribute("class"), "m-nav__link-text");
+            Assert.True(dashbaordNavLink.Enabled);
+            Assert.True(dashbaordNavLink.Displayed);
+            Assert.AreEqual(dashbaordNavLink.Text, "Dashboard");
+            Assert.AreEqual(dashbaordNavLink.GetAttribute("class"), "m-nav__link-text");
 
             var urlBeforeClick = driver.Url;
-            dashbaordBtn.Click();
+            dashbaordNavLink.Click();
             var UrlAfterClick = driver.Url;
             Assert.AreNotEqual(UrlAfterClick, urlBeforeClick);
         }
@@ -313,6 +315,7 @@ namespace AdminPageTests
 
             Assert.IsTrue(seperator.Enabled);
             Assert.IsTrue(seperator.Displayed);
+            Assert.AreEqual(seperator.Text,">");
             Assert.AreEqual(seperator.GetAttribute("class"), "m-nav__separator");
         }
 
@@ -325,14 +328,16 @@ namespace AdminPageTests
 
             var showLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributesTable_length\"]/label"));
-            Assert.True(showLabel.Text.Contains("Show"));
             Assert.True(showLabel.Enabled);
             Assert.True(showLabel.Displayed);
+            Assert.True(showLabel.Text.Contains("Show"));
             showLabel.Click();
 
             var showValue = driver.FindElement(By.Name("AssetAttributesTable_length"));
             Assert.True(showValue.Enabled);
             Assert.True(showValue.Displayed);
+            Assert.AreEqual(showValue.GetAttribute("aria-controls"), "AssetAttributesTable");
+
             var selectedValue = new SelectElement(showValue);
             selectedValue.SelectByIndex(1);
         }
@@ -346,20 +351,31 @@ namespace AdminPageTests
             var searchLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributesTable_filter\"]/label"));
             searchLabel.Click();
-            Assert.True(searchLabel.Enabled);
+            Assert.IsTrue(searchLabel.Enabled);
+            Assert.IsTrue(searchLabel.Displayed);
             Assert.AreEqual(searchLabel.Text, "Search:");
 
             var searchInput = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributesTable_filter\"]/label/input"));
+            Assert.IsTrue(searchInput.Enabled);
+            Assert.IsTrue(searchInput.Displayed);
+            Assert.AreEqual(searchInput.GetAttribute("type"),"Search");
+            Assert.AreEqual(searchInput.GetAttribute("aria-controls"), "AssetAttributesTable");
             searchInput.SendKeys("Code");
-            Assert.True(searchLabel.Enabled);
         }
 
         [Test]
-        public void CreateAssetAttributesPage_ReOrderPageTest()
+        public void CreateAssetAttributesPage_CreateAssetAttributeTableTest()
         {
             // to open create asset attributes page
             CreateAssetAttributes_OpenPage();
+
+            var tableColumns = driver.FindElements(By.Id("AssetAttributesTable"));
+            foreach(var column in tableColumns)
+            {
+                Assert.IsTrue(column.Enabled);
+                Assert.IsTrue(column.Displayed);
+            }
 
             var attributesName = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributesTable\"]/thead/tr/th[1]"));
@@ -414,6 +430,11 @@ namespace AdminPageTests
             createBtn.Click();
         }
 
+
+        // there are two issues in this piece 
+        // [1] Asset Units Label Must Linked With Asset Unit Dropdownlist but is Linked With Description Text Area
+        // [2] Asset DataType Label Must Linked With Asset DataType Dropdownlist but is Linked With Description Text Area
+
         [Test]
         public void CreateAssetAttributesPage_CreateFormTest()
         {
@@ -425,55 +446,95 @@ namespace AdminPageTests
             createBtn.Click();
 
             var assetAttributesLabel = driver.FindElement
-                (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[1]/div/div/div/label"));
+               (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[1]/div/div/div/label"));
             assetAttributesLabel.Click();
             Assert.True(assetAttributesLabel.Enabled);
             Assert.True(assetAttributesLabel.Displayed);
             Assert.AreEqual(assetAttributesLabel.Text, "Asset Attribute");
+            Assert.AreEqual(assetAttributesLabel.GetAttribute("for"), "AssetClass");
+            Assert.AreEqual(assetAttributesLabel.GetAttribute("class"), "form-label");
 
             var assetAttributesInput = driver.FindElement(By.Id("AssetAttributeName"));
-            var requiredField = assetAttributesInput.GetAttribute("required");
-            Assert.AreEqual(requiredField, "true");
             Assert.True(assetAttributesInput.Enabled);
             Assert.True(assetAttributesInput.Displayed);
+            Assert.AreEqual(assetAttributesInput.GetAttribute("type"), "text");
+            Assert.AreEqual(assetAttributesInput.GetAttribute("required"), "true");
+            Assert.AreEqual(assetAttributesInput.GetAttribute("maxlength"), "128");
+            Assert.AreEqual(assetAttributesInput.GetAttribute("class"), "form-control");
             assetAttributesInput.SendKeys("Test Name");
 
-            var assetUnit = driver.FindElement(By.Id("AssetAttributeUnits"));
-            var selectedAssetUnit = new SelectElement(assetUnit);
-            selectedAssetUnit.SelectByIndex(1);
+            var attributeUnitsDropdownlistLabel = driver.FindElement
+                (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[2]/div/div/div/label"));
+            Assert.IsTrue(attributeUnitsDropdownlistLabel.Enabled);
+            Assert.IsTrue(attributeUnitsDropdownlistLabel.Displayed);
+            Assert.AreEqual(attributeUnitsDropdownlistLabel.Text, "Attribute Units");
+            Assert.AreEqual(attributeUnitsDropdownlistLabel.GetAttribute("for"), "AssetAttributeUnits");
+            Assert.AreEqual(attributeUnitsDropdownlistLabel.GetAttribute("class"), "form-label-default ");
 
-            var attributeDataType = driver.FindElement(By.Id("AssetAttributeDataType"));
-            var selectedAttributeDataType = new SelectElement(attributeDataType);
+            var AttributeUnitsDropdownlist = driver.FindElement(By.Id("AssetAttributeUnits"));
+            Assert.IsTrue(AttributeUnitsDropdownlist.Enabled);
+            Assert.IsTrue(AttributeUnitsDropdownlist.Displayed);
+            Assert.AreEqual(AttributeUnitsDropdownlist.GetAttribute("class"), " form-control");
+
+            var defaultOption = driver.FindElement(By.XPath("//*[@id=\"AssetAttributeUnits\"]/option[1]"));
+            Assert.IsTrue(defaultOption.Enabled);
+            Assert.IsTrue(defaultOption.Displayed);
+            Assert.AreEqual(defaultOption.Text, "No Units");
+
+            var selectedAttributeUnitsDropdownlist = new SelectElement(AttributeUnitsDropdownlist);
+            selectedAttributeUnitsDropdownlist.SelectByIndex(1);
+
+
+            var AttributeDateTypeDropdownlistLabel = driver.FindElement
+                (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[3]/div/div/div/label"));
+            Assert.IsTrue(AttributeDateTypeDropdownlistLabel.Enabled);
+            Assert.IsTrue(AttributeDateTypeDropdownlistLabel.Displayed);
+            Assert.AreEqual(AttributeDateTypeDropdownlistLabel.Text, "Attribute DataType");
+            Assert.AreEqual(AttributeDateTypeDropdownlistLabel.GetAttribute("for"), "AssetAttributeDataType");
+            Assert.AreEqual(AttributeDateTypeDropdownlistLabel.GetAttribute("class"), "form-label-default ");
+
+
+            var AttributeDataTypeDropdownlist = driver.FindElement(By.Id("AssetAttributeDataType"));
+            Assert.IsTrue(AttributeUnitsDropdownlist.Enabled);
+            Assert.IsTrue(AttributeUnitsDropdownlist.Displayed);
+            Assert.AreEqual(AttributeUnitsDropdownlist.GetAttribute("class"), " form-control");
+
+            var selectedAttributeDataType = new SelectElement(AttributeDataTypeDropdownlist);
             selectedAttributeDataType.SelectByIndex(1);
 
             var descriptionLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[4]/div/div/div/label"));
-            descriptionLabel.Click();
             Assert.True(descriptionLabel.Enabled);
             Assert.True(descriptionLabel.Displayed);
             Assert.AreEqual(descriptionLabel.Text, "Description");
-            Assert.AreEqual(descriptionLabel.Text, "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("for"), "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("class"), "form-label-default ");
 
             var descriptionInput = driver.FindElement(By.Id("Description"));
             Assert.True(descriptionInput.Enabled);
             Assert.True(descriptionInput.Displayed);
+            Assert.AreEqual(descriptionInput.GetAttribute("maxlength"), "500");
+            Assert.AreEqual(descriptionInput.GetAttribute("type"), "textarea");
+            Assert.AreEqual(descriptionInput.GetAttribute("class"), " form-control");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length-max"), "500");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length"), "The field Description must be a string with a maximum length of 500.");
             descriptionInput.SendKeys("Test");
 
             var saveBtn = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[5]/button[1]"));
-            var saveBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(saveBtn.Text, "Save");
             Assert.True(saveBtn.Enabled);
             Assert.True(saveBtn.Displayed);
+            Assert.AreEqual(saveBtn.Text, "Save");
+            Assert.AreEqual(saveBtn.GetAttribute("type"), "submit");
+            Assert.AreEqual(saveBtn.GetAttribute("class"), "btn btn-primary waves-effect");
 
             var cancelBtn = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[5]/button[2]"));
-            var cancelBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("type"), "button");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "btn btn-default waves-effect");
         }
 
         [Test]
@@ -495,8 +556,11 @@ namespace AdminPageTests
             Assert.AreEqual(DeleteIcon.GetAttribute("class"), "fa fa-edit");
         }
 
+        // there are two issues in this piece 
+        // [1] Asset Units Label Must Linked With Asset Unit Dropdownlist but is Linked With Description Text Area
+        // [2] Asset DataType Label Must Linked With Asset DataType Dropdownlist but is Linked With Description Text Area
         [Test]
-        public void CreateAssetAttributesPage_EditAssetFormTest()
+        public void CreateAssetAttributesPage_EditIconFormTest()
         {
             // to open create asset attributes page
             CreateAssetAttributes_OpenPage();
@@ -511,50 +575,90 @@ namespace AdminPageTests
             Assert.True(assetAttributesLabel.Enabled);
             Assert.True(assetAttributesLabel.Displayed);
             Assert.AreEqual(assetAttributesLabel.Text, "Asset Attribute");
+            Assert.AreEqual(assetAttributesLabel.GetAttribute("for"),"AssetClass");
+            Assert.AreEqual(assetAttributesLabel.GetAttribute("class"),"form-label");
 
             var assetAttributesInput = driver.FindElement(By.Id("AssetAttributeName"));
-            var requiredField = assetAttributesInput.GetAttribute("required");
-            Assert.AreEqual(requiredField, "true");
             Assert.True(assetAttributesInput.Enabled);
             Assert.True(assetAttributesInput.Displayed);
+            Assert.AreEqual(assetAttributesInput.GetAttribute("type"),"text");
+            Assert.AreEqual(assetAttributesInput.GetAttribute("required"),"true");
+            Assert.AreEqual(assetAttributesInput.GetAttribute("maxlength"),"128");
+            Assert.AreEqual(assetAttributesInput.GetAttribute("class"),"form-control");
             assetAttributesInput.SendKeys("Test Name");
 
-            var assetUnit = driver.FindElement(By.Id("AssetAttributeUnits"));
-            var selectedAssetUnit = new SelectElement(assetUnit);
-            selectedAssetUnit.SelectByIndex(1);
+            var attributeUnitsDropdownlistLabel = driver.FindElement
+                (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[2]/div/div/div/label"));
+            Assert.IsTrue(attributeUnitsDropdownlistLabel.Enabled);
+            Assert.IsTrue(attributeUnitsDropdownlistLabel.Displayed);
+            Assert.AreEqual(attributeUnitsDropdownlistLabel.Text,"Attribute Units");
+            Assert.AreEqual(attributeUnitsDropdownlistLabel.GetAttribute("for"), "AssetAttributeUnits");
+            Assert.AreEqual(attributeUnitsDropdownlistLabel.GetAttribute("class"),"form-label-default ");
 
-            var attributeDataType = driver.FindElement(By.Id("AssetAttributeDataType"));
-            var selectedAttributeDataType = new SelectElement(attributeDataType);
+            var AttributeUnitsDropdownlist = driver.FindElement(By.Id("AssetAttributeUnits"));
+            Assert.IsTrue(AttributeUnitsDropdownlist.Enabled);
+            Assert.IsTrue(AttributeUnitsDropdownlist.Displayed);
+            Assert.AreEqual(AttributeUnitsDropdownlist.GetAttribute("class")," form-control");
+
+            var defaultOption = driver.FindElement(By.XPath("//*[@id=\"AssetAttributeUnits\"]/option[1]"));
+            Assert.IsTrue(defaultOption.Enabled);
+            Assert.IsTrue(defaultOption.Displayed);
+            Assert.AreEqual(defaultOption.Text,"No Units");
+
+            var selectedAttributeUnitsDropdownlist = new SelectElement(AttributeUnitsDropdownlist);
+            selectedAttributeUnitsDropdownlist.SelectByIndex(1);
+
+
+            var AttributeDateTypeDropdownlistLabel = driver.FindElement
+                (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[3]/div/div/div/label"));
+            Assert.IsTrue(AttributeDateTypeDropdownlistLabel.Enabled);
+            Assert.IsTrue(AttributeDateTypeDropdownlistLabel.Displayed);
+            Assert.AreEqual(AttributeDateTypeDropdownlistLabel.Text, "Attribute DataType");
+            Assert.AreEqual(AttributeDateTypeDropdownlistLabel.GetAttribute("for"), "AssetAttributeDataType");
+            Assert.AreEqual(AttributeDateTypeDropdownlistLabel.GetAttribute("class"), "form-label-default ");
+
+
+            var AttributeDataTypeDropdownlist = driver.FindElement(By.Id("AssetAttributeDataType"));
+            Assert.IsTrue(AttributeUnitsDropdownlist.Enabled);
+            Assert.IsTrue(AttributeUnitsDropdownlist.Displayed);
+            Assert.AreEqual(AttributeUnitsDropdownlist.GetAttribute("class"), " form-control");
+
+            var selectedAttributeDataType = new SelectElement(AttributeDataTypeDropdownlist);
             selectedAttributeDataType.SelectByIndex(1);
 
             var descriptionLabel = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[4]/div/div/div/label"));
-            descriptionLabel.Click();
             Assert.True(descriptionLabel.Enabled);
             Assert.True(descriptionLabel.Displayed);
             Assert.AreEqual(descriptionLabel.Text, "Description");
-            Assert.AreEqual(descriptionLabel.Text, "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("for"), "Description");
+            Assert.AreEqual(descriptionLabel.GetAttribute("class"),"form-label-default ");
 
             var descriptionInput = driver.FindElement(By.Id("Description"));
             Assert.True(descriptionInput.Enabled);
             Assert.True(descriptionInput.Displayed);
+            Assert.AreEqual(descriptionInput.GetAttribute("maxlength"),"500");
+            Assert.AreEqual(descriptionInput.GetAttribute("type"),"textarea");
+            Assert.AreEqual(descriptionInput.GetAttribute("class")," form-control");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length-max"),"500");
+            Assert.AreEqual(descriptionInput.GetAttribute("data-val-length"), "The field Description must be a string with a maximum length of 500.");
             descriptionInput.SendKeys("Test");
 
             var saveBtn = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[5]/button[1]"));
-            var saveBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(saveBtn.Text, "Save");
             Assert.True(saveBtn.Enabled);
             Assert.True(saveBtn.Displayed);
+            Assert.AreEqual(saveBtn.Text, "Save");
+            Assert.AreEqual(saveBtn.GetAttribute("type"),"submit");
+            Assert.AreEqual(saveBtn.GetAttribute("class"), "btn btn-primary waves-effect");
 
             var cancelBtn = driver.FindElement
                 (By.XPath("//*[@id=\"AssetAttributeCreateModal\"]/form/div[5]/button[2]"));
-            var cancelBtnType = saveBtn.GetAttribute("type");
-            Assert.AreEqual(saveBtnType, "submit");
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("type"), "button");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "btn btn-default waves-effect");
         }
 
         [Test]
@@ -577,7 +681,7 @@ namespace AdminPageTests
         }
 
         [Test]
-        public void CreateAssetAttributesPage_DeleteAssetFormTest()
+        public void CreateAssetAttributesPage_DeleteIconFormTest()
         {
             // to open create asset attributes page
             CreateAssetAttributes_OpenPage();
@@ -586,24 +690,37 @@ namespace AdminPageTests
                 (By.XPath("//*[@id=\"AssetAttributesTable\"]/tbody/tr[1]/td[4]/a[2]"));
             deleteIcon.Click();
 
-            var confirmWindo = driver.FindElement(By.XPath("/html/body/div[4]/div/div[1]"));
-            Assert.True(confirmWindo.Enabled);
+            /////// swal modal is warning modal  ////////
+            var swalModal = driver.FindElement(By.XPath("/html/body/div[4]/div"));
+            Assert.IsTrue(swalModal.Enabled);
+            Assert.IsTrue(swalModal.Displayed);
+            Assert.AreEqual(swalModal.GetAttribute("role"), "dialog");
+            Assert.AreEqual(swalModal.GetAttribute("class"), "swal-modal");
 
-            var warninigMessage = driver.FindElement
-                (By.XPath("/html/body/div[4]/div/div[2]"));
-            Assert.AreEqual(warninigMessage.Text, "Are you sure?");
+            var swalTitle = driver.FindElement(By.XPath("/html/body/div[4]/div/div[2]"));
+            Assert.IsTrue(swalTitle.Enabled);
+            Assert.IsTrue(swalTitle.Displayed);
+            Assert.AreEqual(swalTitle.Text, "Are you sure?");
+            Assert.AreEqual(swalTitle.GetAttribute("class"), "swal-title");
+
+            var swalIcon = driver.FindElement(By.XPath("/html/body/div[4]/div/div[1]"));
+            Assert.IsTrue(swalIcon.Enabled);
+            Assert.IsTrue(swalIcon.Displayed);
+            Assert.AreEqual(swalIcon.GetAttribute("class"), "swal-icon swal-icon--warning");
 
             var yesBtn = driver.FindElement
                 (By.XPath("/html/body/div[4]/div/div[3]/div[2]/button"));
-            Assert.AreEqual(yesBtn.Text, "Yes");
             Assert.True(yesBtn.Enabled);
             Assert.True(yesBtn.Displayed);
+            Assert.AreEqual(yesBtn.Text, "Yes");
+            Assert.AreEqual(yesBtn.GetAttribute("class"), "swal-button swal-button--confirm");
 
-            var cancelBtn = driver.FindElement(
-                By.XPath("/html/body/div[4]/div/div[3]/div[1]/button"));
-            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            var cancelBtn = driver.FindElement
+                (By.XPath("/html/body/div[4]/div/div[3]/div[1]/button"));
             Assert.True(cancelBtn.Enabled);
             Assert.True(cancelBtn.Displayed);
+            Assert.AreEqual(cancelBtn.Text, "Cancel");
+            Assert.AreEqual(cancelBtn.GetAttribute("class"), "swal-button swal-button--cancel");
         }
 
         [Test]
@@ -770,15 +887,19 @@ namespace AdminPageTests
             CreateAssetAttributes_OpenPage();
 
             var nextBtn = driver.FindElement(By.Id("AssetAttributesTable_next"));
-            Assert.AreEqual(nextBtn.Text, "Next");
             Assert.True(nextBtn.Enabled);
             Assert.True(nextBtn.Displayed);
+            Assert.AreEqual(nextBtn.Text, "Next");
+            Assert.AreEqual(nextBtn.GetAttribute("class"), "paginate_button next");
+            Assert.AreEqual(nextBtn.GetAttribute("aria-controls"), "AssetAttributesTable");
             nextBtn.Click();
 
             var previoustBtn = driver.FindElement(By.Id("AssetAttributesTable_previous"));
-            Assert.AreEqual(previoustBtn.Text, "Previous");
             Assert.True(previoustBtn.Enabled);
             Assert.True(previoustBtn.Displayed);
+            Assert.AreEqual(previoustBtn.Text, "Previous");
+            Assert.AreEqual(previoustBtn.GetAttribute("class"), "paginate_button previous disabled");
+            Assert.AreEqual(previoustBtn.GetAttribute("aria-controls"),"AssetAttributesTable");
             previoustBtn.Click(); 
 
             var pages = driver.FindElements(By.XPath("AssetAttributesTable_paginate"));
